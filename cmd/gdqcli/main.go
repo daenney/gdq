@@ -45,8 +45,6 @@ func main() {
 	if schedule != nil && len(schedule.Events) > 0 {
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.Debug)
 		fmt.Fprintln(w, "Start Time\tTitle\tEstimate\tRunners\tHosts")
-		schedule.RLock()
-		defer schedule.RUnlock()
 		for _, event := range schedule.Events {
 			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
 				event.Start.Local().Format(time.Stamp),

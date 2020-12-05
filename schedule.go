@@ -14,7 +14,7 @@ type Schedule struct {
 	Events   []*Event
 	byRunner map[string][]*Event
 	byHost   map[string][]*Event
-	sync.RWMutex
+	l        sync.RWMutex
 }
 
 // NewSchedule returns an empty Schedule
@@ -42,8 +42,8 @@ func NewSchedule(events []*Event) *Schedule {
 // the byRunner and byHost maps get updated. This permits the filter functions
 // like ForHost and ForRunner to work
 func (s *Schedule) load(events []*Event) {
-	s.Lock()
-	defer s.Unlock()
+	s.l.Lock()
+	defer s.l.Unlock()
 	for _, event := range events {
 		s.Events = append(s.Events, event)
 		for _, runner := range event.Runners {
@@ -73,8 +73,8 @@ func (s *Schedule) load(events []*Event) {
 //
 // The match is case insensitive.
 func (s *Schedule) ForRunner(name string) *Schedule {
-	s.RLock()
-	defer s.RUnlock()
+	s.l.RLock()
+	defer s.l.RUnlock()
 
 	ns := NewSchedule(nil)
 	for r := range s.byRunner {
@@ -93,8 +93,8 @@ func (s *Schedule) ForRunner(name string) *Schedule {
 //
 // The match is case insensitive.
 func (s *Schedule) ForHost(name string) *Schedule {
-	s.RLock()
-	defer s.RUnlock()
+	s.l.RLock()
+	defer s.l.RUnlock()
 
 	ns := NewSchedule(nil)
 	for h := range s.byHost {
@@ -113,8 +113,8 @@ func (s *Schedule) ForHost(name string) *Schedule {
 //
 // The match is case insensitive.
 func (s *Schedule) ForTitle(title string) *Schedule {
-	s.RLock()
-	defer s.RUnlock()
+	s.l.RLock()
+	defer s.l.RUnlock()
 
 	evs := []*Event{}
 	for _, e := range s.Events {
