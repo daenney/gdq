@@ -12,11 +12,87 @@ import (
 	"github.com/daenney/gdq"
 )
 
+type writer struct {
+	tw       *tabwriter.Writer
+	category bool
+	platform bool
+}
+
+func newWriter(category bool, platform bool) *writer {
+	w := &writer{tw: tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.Debug)}
+	w.category = category
+	w.platform = platform
+	if !w.platform && !w.category {
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts")
+	} else if w.platform && w.category {
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tPlatform\tCategory")
+	} else if w.platform {
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tPlatform")
+	} else if w.category {
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tCategory")
+
+	}
+	return w
+}
+
+func (w *writer) Flush() {
+	w.tw.Flush()
+}
+
+func (w *writer) Write(event *gdq.Event) {
+	if !w.platform && !w.category {
+		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\n",
+			event.Start.Local().Format(time.Stamp),
+			event.Title,
+			event.Estimate,
+			strings.Join(event.Runners, ", "),
+			strings.Join(event.Hosts, ", "),
+		)
+		return
+	}
+	if w.platform && w.category {
+		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			event.Start.Local().Format(time.Stamp),
+			event.Title,
+			event.Estimate,
+			strings.Join(event.Runners, ", "),
+			strings.Join(event.Hosts, ", "),
+			event.Platform,
+			event.Category,
+		)
+		return
+	}
+	if w.platform {
+		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
+			event.Start.Local().Format(time.Stamp),
+			event.Title,
+			event.Estimate,
+			strings.Join(event.Runners, ", "),
+			strings.Join(event.Hosts, ", "),
+			event.Platform,
+		)
+		return
+	}
+	if w.category {
+		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
+			event.Start.Local().Format(time.Stamp),
+			event.Title,
+			event.Estimate,
+			strings.Join(event.Runners, ", "),
+			strings.Join(event.Hosts, ", "),
+			event.Category,
+		)
+		return
+	}
+}
+
 func main() {
 
 	host := flag.String("host", "", "show events matching this host")
 	runner := flag.String("runner", "", "show events matching this runner")
 	title := flag.String("title", "", "show events matching this title")
+	category := flag.Bool("show-category", false, "show category in the output")
+	platform := flag.Bool("show-platform", false, "show platform in the output")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
@@ -43,16 +119,9 @@ func main() {
 	}
 
 	if schedule != nil && len(schedule.Events) > 0 {
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', tabwriter.Debug)
-		fmt.Fprintln(w, "Start Time\tTitle\tEstimate\tRunners\tHosts")
+		w := newWriter(*category, *platform)
 		for _, event := range schedule.Events {
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n",
-				event.Start.Local().Format(time.Stamp),
-				event.Title,
-				event.Estimate,
-				strings.Join(event.Runners, ", "),
-				strings.Join(event.Hosts, ", "),
-			)
+			w.Write(event)
 		}
 		w.Flush()
 	}
