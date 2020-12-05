@@ -1,7 +1,6 @@
-# GDQBot
+# GDQ
 
-This is meant to become a [Matrix](https://matrix.org/) bot that will announce
-GDQ events as they happen in all channels the bot is in.
-
-You can use the [`gdq/`](https://github.com/daenney/gdqbot/tree/master/gdq)
-package yourself to get the schedule.
+This repository is a Go library to parse a GDQ schedule, a CLI to get and
+filter a schedule on the command line and eventually a
+[Matrix](https://matrix.org/) bot that will announce GDQ events as they
+happen in all channels the bot is in.

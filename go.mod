@@ -1,4 +1,4 @@
-module github.com/daenney/gdqbot
+module github.com/daenney/gdq
 
 go 1.15
 

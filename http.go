@@ -23,7 +23,7 @@ var defaultTrasnport = &http.Transport{
 type transport struct{}
 
 func (*transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", "gdqbot (+https://github.com/daenney/gdqbot")
+	req.Header.Set("User-Agent", "gdqbot (+https://github.com/daenney/gdq")
 	return defaultTrasnport.RoundTrip(req)
 }
 

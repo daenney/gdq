@@ -9,7 +9,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/daenney/gdqbot/gdq"
+	"github.com/daenney/gdq"
 )
 
 func main() {
