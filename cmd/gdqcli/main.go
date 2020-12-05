@@ -32,11 +32,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if *host != "" {
-		schedule = schedule.ForHost(*host)
-	}
 	if *runner != "" {
 		schedule = schedule.ForRunner(*runner)
+	}
+	if *host != "" {
+		schedule = schedule.ForHost(*host)
 	}
 	if *title != "" {
 		schedule = schedule.ForTitle(*title)
