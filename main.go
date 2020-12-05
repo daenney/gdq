@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -12,9 +13,33 @@ import (
 )
 
 func main() {
+
+	host := flag.String("host", "", "show events matching this host")
+	runner := flag.String("runner", "", "show events matching this runner")
+	title := flag.String("title", "", "show events matching this title")
+
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+		fmt.Fprint(flag.CommandLine.Output(), "\n")
+		fmt.Fprint(flag.CommandLine.Output(), "When using filters, each filter is applied and the resulting filtered schedule is then filtered with the next filter. This means filters are additive, so you can't say show me events for this host or this runner.\n")
+	}
+
+	flag.Parse()
+
 	schedule, err := gdq.GetSchedule(gdq.AGDQ2021, nil)
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	if *host != "" {
+		schedule = schedule.ForHost(*host)
+	}
+	if *runner != "" {
+		schedule = schedule.ForRunner(*runner)
+	}
+	if *title != "" {
+		schedule = schedule.ForTitle(*title)
 	}
 
 	if schedule != nil && len(schedule.Events) > 0 {
