@@ -5,6 +5,12 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"unicode"
+
+	"golang.org/x/text/runes"
+	"golang.org/x/text/secure/precis"
+	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 
 	"github.com/anaskhan96/soup"
 )
@@ -78,7 +84,7 @@ func (s *Schedule) ForRunner(name string) *Schedule {
 
 	ns := NewSchedule(nil)
 	for r := range s.byRunner {
-		if strings.Contains(strings.ToLower(r), strings.ToLower(name)) {
+		if strings.Contains(normalised(r), normalised(name)) {
 			ns.load(s.byRunner[r])
 		}
 	}
@@ -98,7 +104,7 @@ func (s *Schedule) ForHost(name string) *Schedule {
 
 	ns := NewSchedule(nil)
 	for h := range s.byHost {
-		if strings.Contains(strings.ToLower(h), strings.ToLower(name)) {
+		if strings.Contains(normalised(h), normalised(name)) {
 			ns.load(s.byHost[h])
 		}
 	}
@@ -118,7 +124,7 @@ func (s *Schedule) ForTitle(title string) *Schedule {
 
 	evs := []*Event{}
 	for _, e := range s.Events {
-		if strings.Contains(strings.ToLower(e.Title), strings.ToLower(title)) {
+		if strings.Contains(normalised(e.Title), normalised(title)) {
 			evs = append(evs, e)
 		}
 	}
@@ -160,4 +166,27 @@ func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 	schedule := NewSchedule(events)
 
 	return schedule, nil
+}
+
+// normalised transforms a string to a variant that has punctuation and
+// diacritics removed, and is mapped to lower case
+func normalised(s string) string {
+	s = runes.Remove(runes.In(unicode.Punct)).String(s)
+	filter := precis.NewIdentifier(
+		precis.LowerCase(),
+		precis.AdditionalMapping(func() transform.Transformer {
+			return transform.Chain(
+				norm.NFD,
+				runes.Remove(runes.In(unicode.Mn)))
+		}),
+		precis.Norm(norm.NFC),
+	)
+
+	normalised := []string{}
+	for _, p := range strings.Fields(s) {
+		res, _ := filter.String(p)
+		normalised = append(normalised, res)
+	}
+
+	return strings.Join(normalised, " ")
 }
