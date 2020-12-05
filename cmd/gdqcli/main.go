@@ -97,8 +97,10 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
-		fmt.Fprint(flag.CommandLine.Output(), "\n")
-		fmt.Fprint(flag.CommandLine.Output(), "When using filters, each filter is applied and the resulting filtered schedule is then filtered with the next filter. This means filters are additive, so you can't say show me events for this host or this runner.\n")
+		fmt.Fprintln(flag.CommandLine.Output())
+		fmt.Fprintln(flag.CommandLine.Output(), "When using filters, each filter is applied and the resulting filtered schedule is then filtered with the next filter. This means filters are additive, so you can't say show me events for this host or this runner.")
+		fmt.Fprintln(flag.CommandLine.Output())
+		fmt.Fprintln(flag.CommandLine.Output(), "All filters use a case insensitive substring match. This means that passing a filter of '-runner e' will find all events where any runner has the letter 'e' in their handle.")
 	}
 
 	flag.Parse()
