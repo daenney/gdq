@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -93,6 +94,7 @@ func main() {
 	title := flag.String("title", "", "show events matching this title")
 	category := flag.Bool("show-category", false, "show category in the output")
 	platform := flag.Bool("show-platform", false, "show platform in the output")
+	format := flag.String("format", "table", "one of table or json")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
@@ -121,10 +123,21 @@ func main() {
 	}
 
 	if schedule != nil && len(schedule.Events) > 0 {
-		w := newWriter(*category, *platform)
-		for _, event := range schedule.Events {
-			w.Write(event)
+		switch strings.ToLower(*format) {
+		case "table":
+			w := newWriter(*category, *platform)
+			for _, event := range schedule.Events {
+				w.Write(event)
+			}
+			w.Flush()
+		case "json":
+			enc := json.NewEncoder(os.Stdout)
+			enc.SetIndent("", "    ")
+			if err := enc.Encode(schedule.Events); err != nil {
+				log.Fatalln(err)
+			}
+		default:
+			log.Fatalf("unrecognised value for format flag: %s\n", *format)
 		}
-		w.Flush()
 	}
 }
