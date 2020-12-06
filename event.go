@@ -8,16 +8,24 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+type duration struct {
+	time.Duration
+}
+
+func (d duration) MarshalJSON() (b []byte, err error) {
+	return []byte(fmt.Sprintf(`"%s"`, d.String())), nil
+}
+
 // Event represents a single event at a GDQ
 type Event struct {
-	Start    time.Time
-	Setup    time.Duration
-	Estimate time.Duration
-	Runners  []string
-	Hosts    []string
-	Title    string
-	Category string
-	Platform string
+	Start    time.Time `json:"start"`
+	Setup    duration  `json:"setup"`
+	Estimate duration  `json:"estimate"`
+	Runners  []string  `json:"runners"`
+	Hosts    []string  `json:"hosts"`
+	Title    string    `json:"title"`
+	Category string    `json:"category"`
+	Platform string    `json:"platform"`
 }
 
 func eventFromHTML(rows ...soup.Root) (*Event, error) {
@@ -62,12 +70,12 @@ func toDateTime(input string) time.Time {
 	return res
 }
 
-func toDuration(input string) time.Duration {
+func toDuration(input string) duration {
 	elems := strings.Split(input, ":")
 	entry := fmt.Sprintf("%sh%sm%ss", strings.TrimSpace(elems[0]), strings.TrimSpace(elems[1]), strings.TrimSpace(elems[2]))
 	res, err := time.ParseDuration(entry)
 	if err != nil {
-		return 0
+		return duration{0}
 	}
-	return res
+	return duration{res}
 }
