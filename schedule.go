@@ -25,22 +25,27 @@ type Schedule struct {
 }
 
 // NewSchedule returns an empty Schedule
-func NewSchedule(events []*Event) *Schedule {
-	if events != nil && len(events) > 0 {
-		s := &Schedule{
-			Events:   make([]*Event, 0, len(events)),
-			byRunner: map[string][]*Event{},
-			byHost:   map[string][]*Event{},
-		}
-		s.load(events)
-		return s
-	}
-
+func NewSchedule() *Schedule {
 	return &Schedule{
 		Events:   []*Event{},
 		byRunner: map[string][]*Event{},
 		byHost:   map[string][]*Event{},
 	}
+}
+
+// NewScheduleFrom returns a scheduled filled with the events
+func NewScheduleFrom(events []*Event) *Schedule {
+	if events == nil || len(events) == 0 {
+		return NewSchedule()
+	}
+
+	s := &Schedule{
+		Events:   make([]*Event, 0, len(events)),
+		byRunner: map[string][]*Event{},
+		byHost:   map[string][]*Event{},
+	}
+	s.load(events)
+	return s
 }
 
 // load a series of events in the Schedule
@@ -83,7 +88,7 @@ func (s *Schedule) ForRunner(name string) *Schedule {
 	s.l.RLock()
 	defer s.l.RUnlock()
 
-	ns := NewSchedule(nil)
+	ns := NewSchedule()
 	for r := range s.byRunner {
 		if strings.Contains(normalised(r), normalised(name)) {
 			ns.load(s.byRunner[r])
@@ -103,7 +108,7 @@ func (s *Schedule) ForHost(name string) *Schedule {
 	s.l.RLock()
 	defer s.l.RUnlock()
 
-	ns := NewSchedule(nil)
+	ns := NewSchedule()
 	for h := range s.byHost {
 		if strings.Contains(normalised(h), normalised(name)) {
 			ns.load(s.byHost[h])
@@ -130,7 +135,7 @@ func (s *Schedule) ForTitle(title string) *Schedule {
 		}
 	}
 
-	ns := NewSchedule(evs)
+	ns := NewScheduleFrom(evs)
 	return ns
 }
 
@@ -192,7 +197,7 @@ func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 		events = append(events, event)
 	}
 
-	schedule := NewSchedule(events)
+	schedule := NewScheduleFrom(events)
 
 	return schedule, nil
 }
