@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 
 	"golang.org/x/text/runes"
@@ -131,6 +132,22 @@ func (s *Schedule) ForTitle(title string) *Schedule {
 
 	ns := NewSchedule(evs)
 	return ns
+}
+
+// NextEvent returns the next/upcoming event in the schedule
+func (s *Schedule) NextEvent() *Event {
+	now := time.Now().UTC()
+	var ev *Event
+
+	s.l.RLock()
+	defer s.l.RUnlock()
+	for _, event := range s.Events {
+		if event.Start.After(now) {
+			ev = event
+			break
+		}
+	}
+	return ev
 }
 
 // GetSchedule returns the Schedule for a GDQ edition
