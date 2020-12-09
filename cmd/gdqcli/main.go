@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -95,6 +96,7 @@ func main() {
 	category := flag.Bool("show-category", false, "show category in the output")
 	platform := flag.Bool("show-platform", false, "show platform in the output")
 	format := flag.String("format", "table", "one of table or json")
+	edition := flag.String("edition", "", "GDQ edition to query. This can be a string or a schedule number and when ommitted will result in the current/upcoming schedule being used")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
@@ -107,7 +109,23 @@ func main() {
 
 	flag.Parse()
 
-	schedule, err := gdq.GetSchedule(gdq.AGDQ2021, nil)
+	var ed gdq.Edition
+	if *edition == "" {
+		ed = gdq.Latest
+	} else {
+		v, ok := gdq.GetEdition(*edition)
+		if !ok {
+			num, err := strconv.ParseUint(*edition, 10, 64)
+			if err != nil {
+				log.Fatalf("Could not find an edition matching: %s\n", *edition)
+			}
+			ed = gdq.Edition(uint(num))
+		} else {
+			ed = v
+		}
+	}
+
+	schedule, err := gdq.GetSchedule(ed, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -1,13 +1,17 @@
 package gdq
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Edition is the schedule ID of a GDQ edition
 type Edition uint
 
 // All the GDQ editions for which a schedule is available
 const (
-	AGDQ2016 Edition = iota + 17
+	Latest   Edition = 0
+	AGDQ2016 Edition = iota + 16
 	SGDQ2016
 	AGDQ2017
 	SGDQ2017
@@ -29,6 +33,8 @@ const (
 
 func (e Edition) String() string {
 	switch e {
+	case Latest:
+		return "latest"
 	case AGDQ2016:
 		return "AGDQ2016"
 	case SGDQ2016:
@@ -66,4 +72,31 @@ func (e Edition) String() string {
 	default:
 		return fmt.Sprintf("unknown edition: %d", e)
 	}
+}
+
+var editions = map[string]Edition{
+	"latest":           Latest,
+	"agdq2016":         AGDQ2016,
+	"sgdq2016":         SGDQ2016,
+	"agdq2017":         AGDQ2017,
+	"sgdq2017":         SGDQ2017,
+	"hrdq2017":         HRDQ2017,
+	"agdq2018":         AGDQ2018,
+	"sgdq2018":         SGDQ2018,
+	"gdqx2018":         GDQX2018,
+	"agdq2019":         AGDQ2019,
+	"sgdq2019":         SGDQ2019,
+	"gdqx2019":         GDQX2019,
+	"agdq2020":         AGDQ2020,
+	"frostfatales2020": FrostFatales2020,
+	"sgdq2020":         SGDQ2020,
+	"crdq2020":         CRDQ2020,
+	"fleetfatales2020": FleetFatales2020,
+	"agdq2021":         AGDQ2021,
+}
+
+// GetEdition tries to find an edition matching the input
+func GetEdition(input string) (_ Edition, found bool) {
+	edition, ok := editions[strings.ToLower(input)]
+	return edition, ok
 }
