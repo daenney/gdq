@@ -145,7 +145,19 @@ func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 	}
 
 	doc := soup.HTMLParse(resp)
-	rows := doc.Find("table", "id", "runTable").Find("tbody").FindAll("tr")
+	if doc.Error != nil {
+		return nil, ErrInvalidSchedule
+	}
+	table := doc.Find("table", "id", "runTable")
+	if table.Error != nil {
+		return nil, ErrMissingSchedule
+	}
+	body := table.Find("tbody")
+	if body.Error != nil {
+		return nil, ErrMissingSchedule
+	}
+
+	rows := body.FindAll("tr")
 	if len(rows) < 2 {
 		return nil, ErrMissingSchedule
 	}
