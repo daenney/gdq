@@ -107,6 +107,10 @@ func (s *Schedule) ForHost(name string) *Schedule {
 //
 // The match is case insensitive.
 func (s *Schedule) ForTitle(title string) *Schedule {
+	if strings.TrimSpace(title) == "" {
+		return NewSchedule()
+	}
+
 	s.l.RLock()
 	defer s.l.RUnlock()
 
