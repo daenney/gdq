@@ -63,6 +63,9 @@ func eventFromHTML(rows ...soup.Root) (*Event, error) {
 }
 
 func nicksToSlice(input string) []string {
+	if strings.TrimSpace(input) == "" {
+		return []string{}
+	}
 	data := strings.Split(input, ",")
 	res := make([]string, len(data))
 	for i, d := range data {
