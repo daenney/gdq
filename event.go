@@ -45,8 +45,18 @@ func eventFromHTML(rows ...soup.Root) (*Event, error) {
 
 	e.Estimate = toDuration(tr2[0].Text())
 	catPlat := strings.Split(tr2[1].Text(), "—") // Ceci n'est pas un -
-	e.Category = strings.TrimSpace(catPlat[0])
-	e.Platform = strings.TrimSpace(catPlat[1])
+	category := "unknown"
+	platform := "unknown"
+	if len(catPlat) == 2 {
+		if c := strings.TrimSpace(catPlat[0]); c != "" {
+			category = c
+		}
+		if p := strings.TrimSpace(catPlat[1]); p != "" {
+			platform = p
+		}
+	}
+	e.Category = category
+	e.Platform = platform
 	e.Hosts = nicksToSlice(tr2[2].Text())
 
 	return e, nil
