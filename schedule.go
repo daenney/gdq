@@ -85,16 +85,7 @@ func (s *Schedule) load(events []*Event) {
 //
 // The match is case insensitive.
 func (s *Schedule) ForRunner(name string) *Schedule {
-	s.l.RLock()
-	defer s.l.RUnlock()
-
-	ns := NewSchedule()
-	for r := range s.byRunner {
-		if strings.Contains(normalised(r), normalised(name)) {
-			ns.load(s.byRunner[r])
-		}
-	}
-	return ns
+	return s.forEntity("runner", name)
 }
 
 // ForHost returns a new schedule with events only matching this host
@@ -105,16 +96,7 @@ func (s *Schedule) ForRunner(name string) *Schedule {
 //
 // The match is case insensitive.
 func (s *Schedule) ForHost(name string) *Schedule {
-	s.l.RLock()
-	defer s.l.RUnlock()
-
-	ns := NewSchedule()
-	for h := range s.byHost {
-		if strings.Contains(normalised(h), normalised(name)) {
-			ns.load(s.byHost[h])
-		}
-	}
-	return ns
+	return s.forEntity("host", name)
 }
 
 // ForTitle returns a new schedule with events only matching this event title
@@ -136,6 +118,35 @@ func (s *Schedule) ForTitle(title string) *Schedule {
 	}
 
 	ns := NewScheduleFrom(evs)
+	return ns
+}
+
+func (s *Schedule) forEntity(kind string, match string) *Schedule {
+	ns := NewSchedule()
+	if strings.TrimSpace(match) == "" {
+		return ns
+	}
+
+	var ev map[string][]*Event
+
+	switch kind {
+	case "host":
+		ev = s.byHost
+	case "runner":
+		ev = s.byRunner
+	default:
+		panic(fmt.Sprintf("unsupported kind: %s in forEntity call", kind))
+	}
+
+	s.l.RLock()
+	defer s.l.RUnlock()
+
+	for h := range ev {
+		if strings.Contains(normalised(h), normalised(match)) {
+			ns.load(ev[h])
+		}
+	}
+
 	return ns
 }
 
