@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const userAgent = "gdqbot (+https://github.com/daenney/gdq)"
+
 var defaultTrasnport = &http.Transport{
 	Proxy: http.ProxyFromEnvironment,
 	DialContext: (&net.Dialer{
@@ -23,7 +25,7 @@ var defaultTrasnport = &http.Transport{
 type transport struct{}
 
 func (*transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", "gdqbot (+https://github.com/daenney/gdq)")
+	req.Header.Set("User-Agent", userAgent)
 	return defaultTrasnport.RoundTrip(req)
 }
 
