@@ -87,7 +87,10 @@ func toDuration(input string) duration {
 	if strings.TrimSpace(input) == "" {
 		return duration{0}
 	}
-	elems := strings.Split(input, ":")
+	elems := strings.Split(strings.TrimSpace(input), ":")
+	if len(elems) != 3 {
+		return duration{0}
+	}
 	entry := fmt.Sprintf("%sh%sm%ss", strings.TrimSpace(elems[0]), strings.TrimSpace(elems[1]), strings.TrimSpace(elems[2]))
 	res, err := time.ParseDuration(entry)
 	if err != nil {
