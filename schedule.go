@@ -16,6 +16,8 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
+const scheduleURL = "https://gamesdonequick.com/schedule"
+
 // Schedule represents the events occurring at a GDQ
 type Schedule struct {
 	Events   []*Event
@@ -176,7 +178,7 @@ func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 		client = newHTTPClient()
 	}
 
-	resp, err := soup.GetWithClient(fmt.Sprintf("https://gamesdonequick.com/schedule/%d", id), client)
+	resp, err := soup.GetWithClient(fmt.Sprintf("%s/%d", scheduleURL, id), client)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch schedule: %w", err)
 	}
