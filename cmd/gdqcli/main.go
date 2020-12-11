@@ -125,7 +125,7 @@ func main() {
 		}
 	}
 
-	schedule, err := gdq.GetSchedule(ed, nil)
+	schedule, err := gdq.GetSchedule(ed, newHTTPClient())
 	if err != nil {
 		log.Fatalln(err)
 	}

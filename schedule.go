@@ -173,9 +173,13 @@ func (s *Schedule) NextEvent() *Event {
 }
 
 // GetSchedule returns the Schedule for a GDQ edition
+//
+// A client has to be passed in. Please make sure to configure your client
+// correctly, so not http.DefaultClient. Be nice to server admins and make
+// sure your client sets a User-Agent header.
 func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 	if client == nil {
-		client = newHTTPClient()
+		return nil, fmt.Errorf("missing *http.Client")
 	}
 
 	resp, err := soup.GetWithClient(fmt.Sprintf("%s/%d", scheduleURL, id), client)

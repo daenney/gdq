@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -201,6 +202,13 @@ func newRespWithBody(body string) *http.Response {
 }
 
 func TestGetSchedule(t *testing.T) {
+	t.Run("without client", func(t *testing.T) {
+		_, err := GetSchedule(Latest, nil)
+		assertNotNil(t, err)
+		if !strings.Contains(err.Error(), "missing") {
+			t.Errorf("Got error: %s", err)
+		}
+	})
 	t.Run("URL construction", func(t *testing.T) {
 		client := newTestClient(func(req *http.Request) *http.Response {
 			assertEqual(t, req.URL.String(), fmt.Sprintf("%s/0", scheduleURL))

@@ -1,4 +1,4 @@
-package gdq
+package main
 
 import (
 	"net"
@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const userAgent = "gdqbot (+https://github.com/daenney/gdq)"
+const userAgent = "gdqcli (+https://github.com/daenney/gdq)"
 
 var defaultTrasnport = &http.Transport{
 	Proxy: http.ProxyFromEnvironment,
