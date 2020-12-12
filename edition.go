@@ -31,6 +31,7 @@ const (
 	AGDQ2021
 )
 
+//gocyclo:ignore
 func (e Edition) String() string {
 	switch e {
 	case Latest:
