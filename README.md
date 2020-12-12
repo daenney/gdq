@@ -1,4 +1,13 @@
-# GDQ ![CI](https://github.com/daenney/gdq/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/daenney/gdq/branch/main/graph/badge.svg?token=60AAD7XX7I)](https://codecov.io/gh/daenney/gdq) [![Go Reference](https://pkg.go.dev/badge/github.com/daenney/gdq.svg)](https://pkg.go.dev/github.com/daenney/gdq)
+<h1 align="center">
+🏃 GDQ 🎮
+</h1>
+<h4 align="center">A Go library and CLI for Games Done Quick</h4>
+<p align="center">
+    <a href="https://github.com/daenney/gdq/actions?query=workflow%3ACI"><img src="https://github.com/daenney/gdq/workflows/CI/badge.svg" alt="Build Status"></a>
+    <a href="https://codecov.io/gh/daenney/gdq"><img src="https://codecov.io/gh/daenney/gdq/branch/main/graph/badge.svg" alt="Coverage Status"></a>
+    <a href="https://pkg.go.dev/github.com/daenney/gdq"><img src="https://pkg.go.dev/badge/github.com/daenney/gdq.svg" alt="GoDoc"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/daenney/gdq?style=flat-square" alt="License: MIT"></a>
+</p>
 
 [Games Done Quick (GDQ)](https://gamesdonequick.com/) is a regular
 speedrunning event that collects money for charity. The event is incredibly
