@@ -33,6 +33,9 @@ func TestDurationString(t *testing.T) {
 	t.Run("one hour, two minutes", func(t *testing.T) {
 		assertEqual(t, duration{1*time.Hour + 2*time.Minute}.String(), "1 hour and 2 minutes")
 	})
+	t.Run("two hours, two minutes", func(t *testing.T) {
+		assertEqual(t, duration{2*time.Hour + 2*time.Minute}.String(), "2 hours and 2 minutes")
+	})
 	t.Run("one minute", func(t *testing.T) {
 		assertEqual(t, duration{1 * time.Minute}.String(), "1 minute")
 	})
