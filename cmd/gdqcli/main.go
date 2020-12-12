@@ -19,7 +19,7 @@ func main() {
 	category := flag.Bool("show-category", false, "show category in the output")
 	platform := flag.Bool("show-platform", false, "show platform in the output")
 	format := flag.String("format", "table", "one of table or json")
-	edition := flag.String("edition", "", "GDQ edition to query. This can be a string or a schedule number and when ommitted will result in the current/upcoming schedule being used")
+	edition := flag.String("edition", "", "GDQ edition to query. This can be a string or a schedule number and when omitted will result in the current/upcoming schedule being used")
 
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
