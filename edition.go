@@ -96,7 +96,7 @@ var editions = map[string]Edition{
 }
 
 // GetEdition tries to find an edition matching the input
-func GetEdition(input string) (_ Edition, found bool) {
+func GetEdition(input string) (edition Edition, found bool) {
 	edition, ok := editions[strings.ToLower(input)]
 	return edition, ok
 }
