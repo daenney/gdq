@@ -5,6 +5,7 @@
 <p align="center">
     <a href="https://github.com/daenney/gdq/actions?query=workflow%3ACI"><img src="https://github.com/daenney/gdq/workflows/CI/badge.svg" alt="Build Status"></a>
     <a href="https://codecov.io/gh/daenney/gdq"><img src="https://codecov.io/gh/daenney/gdq/branch/main/graph/badge.svg" alt="Coverage Status"></a>
+    <a href="https://goreportcard.com/report/github.com/daenney/gdq"><img src="https://goreportcard.com/badge/github.com/daenney/gdq" alt="Go report card"></a>
     <a href="https://pkg.go.dev/github.com/daenney/gdq"><img src="https://pkg.go.dev/badge/github.com/daenney/gdq.svg" alt="GoDoc"></a>
     <a href="LICENSE"><img src="https://img.shields.io/github/license/daenney/gdq?style=flat-square" alt="License: MIT"></a>
 </p>
