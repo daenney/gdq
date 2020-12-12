@@ -26,6 +26,8 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: '1.15.6'
+    - name: Check formatting
+      run: test -z $(gofmt -l **.go)
     - name: Run GDQ tests
       run: |
         go test -v -coverprofile=coverage.txt -covermode=atomic
