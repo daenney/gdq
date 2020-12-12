@@ -1,6 +1,7 @@
 package gdq
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -13,7 +14,37 @@ type duration struct {
 }
 
 func (d duration) MarshalJSON() (b []byte, err error) {
-	return []byte(fmt.Sprintf(`"%s"`, d.String())), nil
+	return json.Marshal(d.Duration)
+}
+
+func (d duration) String() string {
+	dur := d.Round(time.Minute)
+	h := dur / time.Hour
+	m := (dur - (h * time.Hour)) / time.Minute
+	if h == 0 {
+		if m == 1 {
+			return "1 minute"
+		}
+		return fmt.Sprintf("%d minutes", m)
+	}
+	b := strings.Builder{}
+	if h == 1 {
+		b.WriteString("1 hour")
+	} else {
+		b.WriteString(fmt.Sprintf("%d hours", h))
+	}
+
+	if m == 0 {
+		return b.String()
+	}
+
+	b.WriteString(" and ")
+	if m == 1 {
+		b.WriteString("1 minute")
+	} else {
+		b.WriteString(fmt.Sprintf("%d minutes", m))
+	}
+	return b.String()
 }
 
 // Event represents a single event at a GDQ
