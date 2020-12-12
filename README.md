@@ -1,4 +1,4 @@
-# GDQ ![CI](https://github.com/daenney/gdq/workflows/CI/badge.svg) [![Go Reference](https://pkg.go.dev/badge/github.com/daenney/gdq.svg)](https://pkg.go.dev/github.com/daenney/gdq)
+# GDQ ![CI](https://github.com/daenney/gdq/workflows/CI/badge.svg) [![codecov](https://codecov.io/gh/daenney/gdq/branch/main/graph/badge.svg?token=60AAD7XX7I)](https://codecov.io/gh/daenney/gdq) [![Go Reference](https://pkg.go.dev/badge/github.com/daenney/gdq.svg)](https://pkg.go.dev/github.com/daenney/gdq)
 
 [Games Done Quick (GDQ)](https://gamesdonequick.com/) is a regular
 speedrunning event that collects money for charity. The event is incredibly
