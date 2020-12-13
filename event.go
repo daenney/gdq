@@ -9,15 +9,17 @@ import (
 	"github.com/anaskhan96/soup"
 )
 
-type duration struct {
+// Duration represents a interval of time
+type Duration struct {
 	time.Duration
 }
 
-func (d duration) MarshalJSON() (b []byte, err error) {
+// MarshalJSON marshals a Duration to JSON
+func (d Duration) MarshalJSON() (b []byte, err error) {
 	return json.Marshal(d.Duration)
 }
 
-func (d duration) String() string {
+func (d Duration) String() string {
 	dur := d.Round(time.Minute)
 	h := dur / time.Hour
 	m := (dur - (h * time.Hour)) / time.Minute
@@ -50,8 +52,8 @@ func (d duration) String() string {
 // Event represents a single event at a GDQ
 type Event struct {
 	Start    time.Time `json:"start"`
-	Setup    duration  `json:"setup"`
-	Estimate duration  `json:"estimate"`
+	Setup    Duration  `json:"setup"`
+	Estimate Duration  `json:"estimate"`
 	Runners  []string  `json:"runners"`
 	Hosts    []string  `json:"hosts"`
 	Title    string    `json:"title"`
@@ -114,18 +116,18 @@ func toDateTime(input string) time.Time {
 	return res
 }
 
-func toDuration(input string) duration {
+func toDuration(input string) Duration {
 	if strings.TrimSpace(input) == "" {
-		return duration{0}
+		return Duration{0}
 	}
 	elems := strings.Split(strings.TrimSpace(input), ":")
 	if len(elems) != 3 {
-		return duration{0}
+		return Duration{0}
 	}
 	entry := fmt.Sprintf("%sh%sm%ss", strings.TrimSpace(elems[0]), strings.TrimSpace(elems[1]), strings.TrimSpace(elems[2]))
 	res, err := time.ParseDuration(entry)
 	if err != nil {
-		return duration{0}
+		return Duration{0}
 	}
-	return duration{res}
+	return Duration{res}
 }
