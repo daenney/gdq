@@ -3,8 +3,8 @@ builds:
     binary: gdqcli
     main: ./cmd/gdqcli
     mod_timestamp: '{{ .CommitTimestamp }}'
-    gcflags:
-      - all=-trimpath={{.Env.GOPATH}}
+    flags:
+      - -trimpath
     env:
       - CGO_ENABLED=0
     goos:
