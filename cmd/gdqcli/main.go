@@ -20,7 +20,7 @@ func main() {
 	platform := flag.Bool("show-platform", false, "show platform in the output")
 	format := flag.String("format", "table", "one of table or json")
 	edition := flag.String("edition", "", "GDQ edition to query. This can be a string or a schedule number and when omitted will result in the current/upcoming schedule being used")
-
+	showVersion := flag.Bool("version", false, "show CLI version and build info")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -31,6 +31,11 @@ func main() {
 	}
 
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Fprintf(os.Stdout, "{\"version\": \"%s\", \"commit\": \"%s\", \"date\": \"%s\"}\n", version, commit, date)
+		os.Exit(0)
+	}
 
 	var ed gdq.Edition
 	if *edition == "" {
