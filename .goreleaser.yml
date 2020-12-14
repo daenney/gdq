@@ -1,0 +1,31 @@
+builds:
+  - id: cli
+    binary: gdqcli
+    main: ./cmd/gdqcli
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    gcflags:
+      - all=-trimpath={{.Env.GOPATH}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - windows
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - 6
+      - 7
+archives:
+  - id: cli
+    builds:
+      - cli
+    wrap_in_directory: true
+    files:
+      - LICENSE
+      - README.md
+    format_overrides:
+      - goos: windows
+        format: zip
