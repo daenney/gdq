@@ -22,3 +22,41 @@ of the schedule changes.
 
 There is also a companion [Matrix](https://matrix.org) bot over at
 [GDQBot](https://github.com/daenney/gdqbot).
+
+## Installation
+
+There are prebuilt binaries available for every release from v1.0.0 onwards. You
+can find them [over here](https://github.com/daenney/gdq/releases).
+
+|Platform|Architecture|Binary|
+|---|---|---|---|
+|Windows|amd64|✅|
+|macOS|amd64|✅|
+|macOS|arm64/M1<sup id="a1">[1](#f1)</sup>|❌|
+|Linux|amd64|✅|
+|Linux|arm64|✅|
+|Linux|armv7/amrhf|✅|
+|Linux|armv6/arm</sup>|✅|
+
+<b id="f1"><sup>1</sup></b> Pending Go 1.16 release [↩](#a1)
+
+## Building
+
+You can `go get` the library, or `git clone` and then run a `go build` followed
+by a `go test` to ensure everything is OK.
+
+You can build the CLI using `go build -trimpath -o gdqctl cmd/gdqcli/*.go` or
+install it directly using `go install github.com/daenney/gdq/cmd/gdqcli`. See
+`go help install` for where the binaries will end up.
+
+To embed the version, commit and date at build time you'll need to add
+`-X main.version=VERSION -X main.commit=SHA -X main.date=DATE` and compute
+the right values yourself.
+
+## Contributing
+
+PRs welcome! Fork+clone the repo and send me a patch. Please ensure that:
+* Make small commits that encapsulate one functional change at a time
+  (implementation change, the associated tests and any doc changes)
+* Every commit explains what it's trying to achieve and why
+* The tests pass
