@@ -29,7 +29,7 @@ There are prebuilt binaries available for every release from v1.0.0 onwards. You
 can find them [over here](https://github.com/daenney/gdq/releases).
 
 |Platform|Architecture|Binary|
-|---|---|---|---|
+|---|---|---|
 |Windows|amd64|✅|
 |macOS|amd64|✅|
 |macOS|arm64/M1<sup id="a1">[1](#f1)</sup>|❌|
