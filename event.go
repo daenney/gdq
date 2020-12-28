@@ -26,7 +26,7 @@ const (
 	FrostFatales2020
 	SGDQ2020
 	CRDQ2020
-	_
+	THPSLaunch
 	FleetFatales2020
 	AGDQ2021
 )
@@ -66,6 +66,8 @@ func (e Event) String() string {
 		return "SGDQ2020"
 	case CRDQ2020:
 		return "CRDQ2020"
+	case THPSLaunch:
+		return "Tony Hawk's Pro Skater 1 + 2 Launch Celebration"
 	case FleetFatales2020:
 		return "FleetFatales2020"
 	case AGDQ2021:
@@ -92,6 +94,7 @@ var events = map[string]Event{
 	"frostfatales2020": FrostFatales2020,
 	"sgdq2020":         SGDQ2020,
 	"crdq2020":         CRDQ2020,
+	"thpslaunch":       THPSLaunch,
 	"fleetfatales2020": FleetFatales2020,
 	"agdq2021":         AGDQ2021,
 }
