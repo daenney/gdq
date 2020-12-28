@@ -5,13 +5,13 @@ import (
 	"strings"
 )
 
-// Edition is the schedule ID of a GDQ edition
-type Edition uint
+// Event is the schedule ID of a GDQ event
+type Event uint
 
-// All the GDQ editions for which a schedule is available
+// All the GDQ events for which a schedule is available
 const (
-	Latest   Edition = 0
-	AGDQ2016 Edition = iota + 16
+	Latest   Event = 0
+	AGDQ2016 Event = iota + 16
 	SGDQ2016
 	AGDQ2017
 	SGDQ2017
@@ -32,7 +32,7 @@ const (
 )
 
 //gocyclo:ignore
-func (e Edition) String() string {
+func (e Event) String() string {
 	switch e {
 	case Latest:
 		return "latest"
@@ -71,11 +71,11 @@ func (e Edition) String() string {
 	case AGDQ2021:
 		return "AGDQ2021"
 	default:
-		return fmt.Sprintf("unknown edition: %d", e)
+		return fmt.Sprintf("unknown event: %d", e)
 	}
 }
 
-var editions = map[string]Edition{
+var events = map[string]Event{
 	"latest":           Latest,
 	"agdq2016":         AGDQ2016,
 	"sgdq2016":         SGDQ2016,
@@ -96,8 +96,8 @@ var editions = map[string]Edition{
 	"agdq2021":         AGDQ2021,
 }
 
-// GetEdition tries to find an edition matching the input
-func GetEdition(input string) (edition Edition, found bool) {
-	edition, ok := editions[strings.ToLower(input)]
-	return edition, ok
+// GetEvent tries to find an event matching the input
+func GetEvent(input string) (ev Event, found bool) {
+	ev, ok := events[strings.ToLower(input)]
+	return ev, ok
 }

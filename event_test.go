@@ -81,10 +81,10 @@ func TestToDuration(t *testing.T) {
 	})
 }
 
-func TestEventFromHTML(t *testing.T) {
+func TestRunFromHTML(t *testing.T) {
 	t.Run("missing data", func(t *testing.T) {
 		s := soup.HTMLParse("")
-		_, err := eventFromHTML(s, s)
+		_, err := runFromHTML(s, s)
 		assertNotNil(t, err)
 		if !errors.Is(err, ErrUnexpectedData) {
 			t.Errorf("expected an error of %s, got %s", ErrUnexpectedData, err)
@@ -101,7 +101,7 @@ func TestEventFromHTML(t *testing.T) {
 		<td><i class="fa fa-microphone"></i> </td>
 		</tr></table></body></html>`)
 		rows := s.FindAll("tr")
-		_, err := eventFromHTML(rows[0], rows[1])
+		_, err := runFromHTML(rows[0], rows[1])
 		assertNotNil(t, err)
 		if !errors.Is(err, ErrUnexpectedData) {
 			t.Errorf("Got %v, expected %v", err, ErrUnexpectedData)
@@ -119,13 +119,13 @@ func TestEventFromHTML(t *testing.T) {
 		<td><i class="fa fa-microphone"></i> </td>
 		</tr></table></body></html>`)
 		rows := s.FindAll("tr")
-		_, err := eventFromHTML(rows[0], rows[1])
+		_, err := runFromHTML(rows[0], rows[1])
 		assertNotNil(t, err)
 		if !errors.Is(err, ErrUnexpectedData) {
 			t.Errorf("Got %v, expected %v", err, ErrUnexpectedData)
 		}
 	})
-	t.Run("single broken event", func(t *testing.T) {
+	t.Run("single broken run", func(t *testing.T) {
 		s := soup.HTMLParse(`<html><table id="runTable"><tbody><tr>
 				<td></td>
 				<td></td>
@@ -138,18 +138,18 @@ func TestEventFromHTML(t *testing.T) {
 				<td><i class="fa fa-microphone"></i> </td>
 				</tr></tbody></table></html>`)
 		rows := s.FindAll("tr")
-		ev, err := eventFromHTML(rows[0], rows[1])
+		run, err := runFromHTML(rows[0], rows[1])
 		assertEqual(t, err, nil)
-		assertEqual(t, ev.Title, "")
-		assertEqual(t, ev.Platform, "unknown")
-		assertEqual(t, ev.Category, "unknown")
-		assertEqual(t, len(ev.Hosts), 0)
-		assertEqual(t, len(ev.Runners), 0)
-		assertEqual(t, ev.Setup.Duration, time.Duration(0))
-		assertEqual(t, ev.Estimate.Duration, time.Duration(0))
-		assertEqual(t, ev.Start, time.Time{})
+		assertEqual(t, run.Title, "")
+		assertEqual(t, run.Platform, "unknown")
+		assertEqual(t, run.Category, "unknown")
+		assertEqual(t, len(run.Hosts), 0)
+		assertEqual(t, len(run.Runners), 0)
+		assertEqual(t, run.Setup.Duration, time.Duration(0))
+		assertEqual(t, run.Estimate.Duration, time.Duration(0))
+		assertEqual(t, run.Start, time.Time{})
 	})
-	t.Run("single valid event", func(t *testing.T) {
+	t.Run("single valid run", func(t *testing.T) {
 		s := soup.HTMLParse(`<html><table id="runTable"><tbody><tr>
 				<td>2021-01-03T17:00:00Z</td>
 				<td>Awesome&#039;s Sauce</td>
@@ -163,17 +163,17 @@ func TestEventFromHTML(t *testing.T) {
 				</tr></tbody></table></html>`)
 
 		rows := s.FindAll("tr")
-		ev, err := eventFromHTML(rows[0], rows[1])
+		run, err := runFromHTML(rows[0], rows[1])
 		assertEqual(t, err, nil)
-		assertEqual(t, ev.Title, "Awesome's Sauce")
-		assertEqual(t, ev.Platform, "PC")
-		assertEqual(t, ev.Category, "Any%")
-		assertEqual(t, len(ev.Hosts), 1)
-		assertEqual(t, ev.Hosts[0], "my_host")
-		assertEqual(t, len(ev.Runners), 1)
-		assertEqual(t, ev.Runners[0], "my_runner")
-		assertEqual(t, ev.Setup.Duration, time.Duration(17*time.Minute))
-		assertEqual(t, ev.Estimate.Duration, time.Duration(46*time.Minute))
-		assertEqual(t, ev.Start, time.Date(2021, 01, 03, 17, 00, 00, 00, time.UTC))
+		assertEqual(t, run.Title, "Awesome's Sauce")
+		assertEqual(t, run.Platform, "PC")
+		assertEqual(t, run.Category, "Any%")
+		assertEqual(t, len(run.Hosts), 1)
+		assertEqual(t, run.Hosts[0], "my_host")
+		assertEqual(t, len(run.Runners), 1)
+		assertEqual(t, run.Runners[0], "my_runner")
+		assertEqual(t, run.Setup.Duration, time.Duration(17*time.Minute))
+		assertEqual(t, run.Estimate.Duration, time.Duration(46*time.Minute))
+		assertEqual(t, run.Start, time.Date(2021, 01, 03, 17, 00, 00, 00, time.UTC))
 	})
 }

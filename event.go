@@ -49,8 +49,8 @@ func (d Duration) String() string {
 	return b.String()
 }
 
-// Event represents a single event at a GDQ
-type Event struct {
+// Run represents a single event at a GDQ
+type Run struct {
 	Start    time.Time `json:"start"`
 	Setup    Duration  `json:"setup"`
 	Estimate Duration  `json:"estimate"`
@@ -61,7 +61,7 @@ type Event struct {
 	Platform string    `json:"platform"`
 }
 
-func eventFromHTML(rows ...soup.Root) (*Event, error) {
+func runFromHTML(rows ...soup.Root) (*Run, error) {
 	tr1 := rows[0].FindAll("td")
 	tr2 := rows[1].FindAll("td")
 
@@ -69,14 +69,14 @@ func eventFromHTML(rows ...soup.Root) (*Event, error) {
 		return nil, ErrUnexpectedData
 	}
 
-	e := &Event{}
+	r := &Run{}
 
-	e.Start = toDateTime(tr1[0].Text())
-	e.Title = strings.TrimSpace(tr1[1].Text())
-	e.Runners = nicksToSlice(tr1[2].Text())
-	e.Setup = toDuration(tr1[3].Text())
+	r.Start = toDateTime(tr1[0].Text())
+	r.Title = strings.TrimSpace(tr1[1].Text())
+	r.Runners = nicksToSlice(tr1[2].Text())
+	r.Setup = toDuration(tr1[3].Text())
 
-	e.Estimate = toDuration(tr2[0].Text())
+	r.Estimate = toDuration(tr2[0].Text())
 	catPlat := strings.Split(tr2[1].Text(), "—") // Ceci n'est pas un -
 	category := "unknown"
 	platform := "unknown"
@@ -88,11 +88,11 @@ func eventFromHTML(rows ...soup.Root) (*Event, error) {
 			platform = p
 		}
 	}
-	e.Category = category
-	e.Platform = platform
-	e.Hosts = nicksToSlice(tr2[2].Text())
+	r.Category = category
+	r.Platform = platform
+	r.Hosts = nicksToSlice(tr2[2].Text())
 
-	return e, nil
+	return r, nil
 }
 
 func nicksToSlice(input string) []string {

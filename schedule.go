@@ -18,71 +18,71 @@ import (
 
 const scheduleURL = "https://gamesdonequick.com/schedule"
 
-// Schedule represents the events occurring at a GDQ
+// Schedule represents the runs occurring at a GDQ event
 type Schedule struct {
-	Events   []*Event
-	byRunner map[string][]*Event
-	byHost   map[string][]*Event
+	Runs     []*Run
+	byRunner map[string][]*Run
+	byHost   map[string][]*Run
 	l        sync.RWMutex
 }
 
 // NewSchedule returns an empty Schedule
 func NewSchedule() *Schedule {
 	return &Schedule{
-		Events:   []*Event{},
-		byRunner: map[string][]*Event{},
-		byHost:   map[string][]*Event{},
+		Runs:     []*Run{},
+		byRunner: map[string][]*Run{},
+		byHost:   map[string][]*Run{},
 	}
 }
 
-// NewScheduleFrom returns a scheduled filled with the events
-func NewScheduleFrom(events []*Event) *Schedule {
-	if events == nil || len(events) == 0 {
+// NewScheduleFrom returns a scheduled filled with the runs
+func NewScheduleFrom(runs []*Run) *Schedule {
+	if runs == nil || len(runs) == 0 {
 		return NewSchedule()
 	}
 
 	s := &Schedule{
-		Events:   make([]*Event, 0, len(events)),
-		byRunner: map[string][]*Event{},
-		byHost:   map[string][]*Event{},
+		Runs:     make([]*Run, 0, len(runs)),
+		byRunner: map[string][]*Run{},
+		byHost:   map[string][]*Run{},
 	}
-	s.load(events)
+	s.load(runs)
 	return s
 }
 
-// load a series of events in the Schedule
+// load a series of runs in the Schedule
 //
-// Call this method when wanting to add events to a schedule to ensure that
+// Call this method when wanting to add runs to a schedule to ensure that
 // the byRunner and byHost maps get updated. This permits the filter functions
 // like ForHost and ForRunner to work
-func (s *Schedule) load(events []*Event) {
+func (s *Schedule) load(runs []*Run) {
 	s.l.Lock()
 	defer s.l.Unlock()
-	for _, event := range events {
-		s.Events = append(s.Events, event)
-		for _, runner := range event.Runners {
+	for _, run := range runs {
+		s.Runs = append(s.Runs, run)
+		for _, runner := range run.Runners {
 			rev, ok := s.byRunner[runner]
 			if ok {
-				s.byRunner[runner] = append(rev, event)
+				s.byRunner[runner] = append(rev, run)
 			} else {
-				s.byRunner[runner] = []*Event{event}
+				s.byRunner[runner] = []*Run{run}
 			}
 		}
-		for _, host := range event.Hosts {
+		for _, host := range run.Hosts {
 			hev, ok := s.byHost[host]
 			if ok {
-				s.byHost[host] = append(hev, event)
+				s.byHost[host] = append(hev, run)
 			} else {
-				s.byHost[host] = []*Event{event}
+				s.byHost[host] = []*Run{run}
 			}
 		}
 	}
 }
 
-// ForRunner returns a new schedule with events only matching this runner
+// ForRunner returns a new schedule with runs only matching this runner
 //
 // The runner's name is matched using a string submatch. This means that if you
-// call somtething like schedule.ForRunner("b") you can get a schedule with events
+// call somtething like schedule.ForRunner("b") you can get a schedule with runs
 // for multiple runners.
 //
 // The match is case insensitive.
@@ -90,10 +90,10 @@ func (s *Schedule) ForRunner(name string) *Schedule {
 	return s.forEntity("runner", name)
 }
 
-// ForHost returns a new schedule with events only matching this host
+// ForHost returns a new schedule with runs only matching this host
 //
 // The host's name is matched using a string submatch. This means that if you
-// call somtething like schedule.ForHust("b") you can get a schedule with events
+// call somtething like schedule.ForHust("b") you can get a schedule with runs
 // for multiple hosts.
 //
 // The match is case insensitive.
@@ -101,11 +101,11 @@ func (s *Schedule) ForHost(name string) *Schedule {
 	return s.forEntity("host", name)
 }
 
-// ForTitle returns a new schedule with events only matching this event title
+// ForTitle returns a new schedule with runs only matching this runs title
 //
 // The title is matched using a string submatch. This means that if you call
 // somtething like schedule.ForTitle("b") you can get a schedule with multiple
-// events.
+// runs.
 //
 // The match is case insensitive.
 func (s *Schedule) ForTitle(title string) *Schedule {
@@ -116,14 +116,14 @@ func (s *Schedule) ForTitle(title string) *Schedule {
 	s.l.RLock()
 	defer s.l.RUnlock()
 
-	evs := []*Event{}
-	for _, e := range s.Events {
-		if strings.Contains(normalised(e.Title), normalised(title)) {
-			evs = append(evs, e)
+	runs := []*Run{}
+	for _, run := range s.Runs {
+		if strings.Contains(normalised(run.Title), normalised(title)) {
+			runs = append(runs, run)
 		}
 	}
 
-	ns := NewScheduleFrom(evs)
+	ns := NewScheduleFrom(runs)
 	return ns
 }
 
@@ -133,13 +133,13 @@ func (s *Schedule) forEntity(kind string, match string) *Schedule {
 		return ns
 	}
 
-	var ev map[string][]*Event
+	var runs map[string][]*Run
 
 	switch kind {
 	case "host":
-		ev = s.byHost
+		runs = s.byHost
 	case "runner":
-		ev = s.byRunner
+		runs = s.byRunner
 	default:
 		panic(fmt.Sprintf("unsupported kind: %s in forEntity call", kind))
 	}
@@ -147,37 +147,37 @@ func (s *Schedule) forEntity(kind string, match string) *Schedule {
 	s.l.RLock()
 	defer s.l.RUnlock()
 
-	for h := range ev {
+	for h := range runs {
 		if strings.Contains(normalised(h), normalised(match)) {
-			ns.load(ev[h])
+			ns.load(runs[h])
 		}
 	}
 
 	return ns
 }
 
-// NextEvent returns the next/upcoming event in the schedule
-func (s *Schedule) NextEvent() *Event {
+// NextRun returns the next/upcoming run in the schedule
+func (s *Schedule) NextRun() *Run {
 	now := time.Now().UTC()
-	var ev *Event
+	var runs *Run
 
 	s.l.RLock()
 	defer s.l.RUnlock()
-	for _, event := range s.Events {
-		if event.Start.After(now) {
-			ev = event
+	for _, run := range s.Runs {
+		if run.Start.After(now) {
+			runs = run
 			break
 		}
 	}
-	return ev
+	return runs
 }
 
-// GetSchedule returns the Schedule for a GDQ edition
+// GetSchedule returns the Schedule for a GDQ event
 //
 // A client has to be passed in. Please make sure to configure your client
 // correctly, so not http.DefaultClient. Be nice to server admins and make
 // sure your client sets a User-Agent header.
-func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
+func GetSchedule(id Event, client *http.Client) (*Schedule, error) {
 	if client == nil {
 		return nil, fmt.Errorf("missing *http.Client")
 	}
@@ -209,16 +209,16 @@ func GetSchedule(id Edition, client *http.Client) (*Schedule, error) {
 		return nil, ErrInvalidSchedule
 	}
 
-	events := []*Event{}
+	runs := []*Run{}
 	for i := 0; i < len(rows); i += 2 {
-		event, err := eventFromHTML(rows[i], rows[i+1])
+		run, err := runFromHTML(rows[i], rows[i+1])
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse rows %s and %s as an event: %w", rows[i].HTML(), rows[i+1].HTML(), err)
+			return nil, fmt.Errorf("failed to parse rows %s and %s as a run: %w", rows[i].HTML(), rows[i+1].HTML(), err)
 		}
-		events = append(events, event)
+		runs = append(runs, run)
 	}
 
-	schedule := NewScheduleFrom(events)
+	schedule := NewScheduleFrom(runs)
 
 	return schedule, nil
 }

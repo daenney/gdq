@@ -37,48 +37,48 @@ func (w *writer) Flush() {
 	w.tw.Flush()
 }
 
-func (w *writer) Write(event *gdq.Event) {
+func (w *writer) Write(run *gdq.Run) {
 	if !w.platform && !w.category {
 		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\n",
-			event.Start.Local().Format(time.Stamp),
-			event.Title,
-			event.Estimate,
-			strings.Join(event.Runners, ", "),
-			strings.Join(event.Hosts, ", "),
+			run.Start.Local().Format(time.Stamp),
+			run.Title,
+			run.Estimate,
+			strings.Join(run.Runners, ", "),
+			strings.Join(run.Hosts, ", "),
 		)
 		return
 	}
 	if w.platform && w.category {
 		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-			event.Start.Local().Format(time.Stamp),
-			event.Title,
-			event.Estimate,
-			strings.Join(event.Runners, ", "),
-			strings.Join(event.Hosts, ", "),
-			event.Platform,
-			event.Category,
+			run.Start.Local().Format(time.Stamp),
+			run.Title,
+			run.Estimate,
+			strings.Join(run.Runners, ", "),
+			strings.Join(run.Hosts, ", "),
+			run.Platform,
+			run.Category,
 		)
 		return
 	}
 	if w.platform {
 		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
-			event.Start.Local().Format(time.Stamp),
-			event.Title,
-			event.Estimate,
-			strings.Join(event.Runners, ", "),
-			strings.Join(event.Hosts, ", "),
-			event.Platform,
+			run.Start.Local().Format(time.Stamp),
+			run.Title,
+			run.Estimate,
+			strings.Join(run.Runners, ", "),
+			strings.Join(run.Hosts, ", "),
+			run.Platform,
 		)
 		return
 	}
 	if w.category {
 		fmt.Fprintf(w.tw, "%s\t%s\t%s\t%s\t%s\t%s\n",
-			event.Start.Local().Format(time.Stamp),
-			event.Title,
-			event.Estimate,
-			strings.Join(event.Runners, ", "),
-			strings.Join(event.Hosts, ", "),
-			event.Category,
+			run.Start.Local().Format(time.Stamp),
+			run.Title,
+			run.Estimate,
+			strings.Join(run.Runners, ", "),
+			strings.Join(run.Hosts, ", "),
+			run.Category,
 		)
 		return
 	}

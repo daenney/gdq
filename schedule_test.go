@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var testEvents = []*Event{
+var testRuns = []*Run{
 	{
 		Title:   "Game 1",
 		Runners: []string{"amazing"},
@@ -59,37 +59,37 @@ func assertNotNil(t *testing.T, a interface{}) {
 }
 
 func TestNewScheduleFrom(t *testing.T) {
-	t.Run("no events", func(t *testing.T) {
-		events := []*Event{}
-		s := NewScheduleFrom(events)
-		assertEqual(t, len(s.Events), 0)
+	t.Run("no runs", func(t *testing.T) {
+		runs := []*Run{}
+		s := NewScheduleFrom(runs)
+		assertEqual(t, len(s.Runs), 0)
 		assertEqual(t, len(s.byRunner), 0)
 		assertEqual(t, len(s.byHost), 0)
 	})
-	t.Run("single empty event", func(t *testing.T) {
-		events := []*Event{{}}
-		s := NewScheduleFrom(events)
-		assertEqual(t, len(s.Events), 1)
+	t.Run("single empty run", func(t *testing.T) {
+		runs := []*Run{{}}
+		s := NewScheduleFrom(runs)
+		assertEqual(t, len(s.Runs), 1)
 		assertEqual(t, len(s.byRunner), 0)
 		assertEqual(t, len(s.byHost), 0)
 	})
-	t.Run("single event", func(t *testing.T) {
-		events := []*Event{
+	t.Run("single run", func(t *testing.T) {
+		runs := []*Run{
 			{
 				Runners: []string{"amazing"},
 				Hosts:   []string{"wonderful"},
 			},
 		}
-		s := NewScheduleFrom(events)
-		assertEqual(t, len(s.Events), 1)
+		s := NewScheduleFrom(runs)
+		assertEqual(t, len(s.Runs), 1)
 		assertEqual(t, len(s.byRunner), 1)
 		assertEqual(t, len(s.byHost), 1)
 		assertEqual(t, len(s.byRunner["amazing"]), 1)
 		assertEqual(t, len(s.byHost["wonderful"]), 1)
 	})
-	t.Run("multiple events", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		assertEqual(t, len(s.Events), 5)
+	t.Run("multiple runs", func(t *testing.T) {
+		s := NewScheduleFrom(testRuns)
+		assertEqual(t, len(s.Runs), 5)
 		assertEqual(t, len(s.byRunner), 2)
 		assertEqual(t, len(s.byHost), 2)
 		assertEqual(t, len(s.byRunner["amazing"]), 3)
@@ -100,27 +100,27 @@ func TestNewScheduleFrom(t *testing.T) {
 }
 
 func TestForEntity(t *testing.T) {
-	s := NewScheduleFrom(testEvents)
+	s := NewScheduleFrom(testRuns)
 	t.Run("runner: empty", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", " ").Events), 0)
+		assertEqual(t, len(s.forEntity("runner", " ").Runs), 0)
 	})
 	t.Run("host: empty", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("host", " ").Events), 0)
+		assertEqual(t, len(s.forEntity("host", " ").Runs), 0)
 	})
 	t.Run("unknown", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", "zz").Events), 0)
+		assertEqual(t, len(s.forEntity("runner", "zz").Runs), 0)
 	})
 	t.Run("exact match", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", "amazing").Events), 3)
+		assertEqual(t, len(s.forEntity("runner", "amazing").Runs), 3)
 	})
 	t.Run("exact match with extra spacing", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", " amazing  ").Events), 3)
+		assertEqual(t, len(s.forEntity("runner", " amazing  ").Runs), 3)
 	})
 	t.Run("patial match single runner", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", "maz").Events), 3)
+		assertEqual(t, len(s.forEntity("runner", "maz").Runs), 3)
 	})
 	t.Run("patial match multiple runners", func(t *testing.T) {
-		assertEqual(t, len(s.forEntity("runner", "a").Events), 4)
+		assertEqual(t, len(s.forEntity("runner", "a").Runs), 4)
 	})
 	t.Run("unknown kind", func(t *testing.T) {
 		defer func() {
@@ -132,21 +132,21 @@ func TestForEntity(t *testing.T) {
 	})
 
 	t.Run("ForRunner", func(t *testing.T) {
-		assertEqual(t, len(s.ForRunner("a").Events), 4)
+		assertEqual(t, len(s.ForRunner("a").Runs), 4)
 	})
 	t.Run("ForHost", func(t *testing.T) {
-		assertEqual(t, len(s.ForHost("a").Events), 1)
+		assertEqual(t, len(s.ForHost("a").Runs), 1)
 	})
 }
 
-func TestNextEvent(t *testing.T) {
-	t.Run("with events in the future", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		e := s.NextEvent()
+func TestNextRun(t *testing.T) {
+	t.Run("with runs in the future", func(t *testing.T) {
+		s := NewScheduleFrom(testRuns)
+		e := s.NextRun()
 		assertEqual(t, e.Title, "Game 4")
 	})
-	t.Run("with only events in the past", func(t *testing.T) {
-		s := NewScheduleFrom([]*Event{
+	t.Run("with only runs in the past", func(t *testing.T) {
+		s := NewScheduleFrom([]*Run{
 			{
 				Title:   "Game 1",
 				Runners: []string{"amazing"},
@@ -154,28 +154,28 @@ func TestNextEvent(t *testing.T) {
 				Start:   time.Now().Add(-10 * time.Minute).UTC(),
 			},
 		})
-		e := s.NextEvent()
-		var empty *Event
+		e := s.NextRun()
+		var empty *Run
 		assertEqual(t, e, empty)
 	})
 }
 
 func TestForTitle(t *testing.T) {
 	t.Run("empty title", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		assertEqual(t, len(s.ForTitle("").Events), 0)
+		s := NewScheduleFrom(testRuns)
+		assertEqual(t, len(s.ForTitle("").Runs), 0)
 	})
 	t.Run("unknown title", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		assertEqual(t, len(s.ForTitle("x").Events), 0)
+		s := NewScheduleFrom(testRuns)
+		assertEqual(t, len(s.ForTitle("x").Runs), 0)
 	})
 	t.Run("matching title", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		assertEqual(t, len(s.ForTitle("4 ").Events), 1)
+		s := NewScheduleFrom(testRuns)
+		assertEqual(t, len(s.ForTitle("4 ").Runs), 1)
 	})
 	t.Run("matching multiple titles", func(t *testing.T) {
-		s := NewScheduleFrom(testEvents)
-		assertEqual(t, len(s.ForTitle(" ga ").Events), 5)
+		s := NewScheduleFrom(testRuns)
+		assertEqual(t, len(s.ForTitle(" ga ").Runs), 5)
 	})
 }
 
@@ -282,7 +282,7 @@ func TestGetSchedule(t *testing.T) {
 			t.Errorf("Got %v, expected %v", err, ErrUnexpectedData)
 		}
 	})
-	t.Run("runtable, multiple events", func(t *testing.T) {
+	t.Run("runtable, multiple runs", func(t *testing.T) {
 		client := newTestClient(func(req *http.Request) *http.Response {
 			return newRespWithBody(`<html><table id="runTable"><tbody><tr>
 			<td>2020-12-01T16:00:00Z</td>
@@ -321,6 +321,6 @@ func TestGetSchedule(t *testing.T) {
 
 		s, err := GetSchedule(Latest, client)
 		assertEqual(t, err, nil)
-		assertEqual(t, len(s.Events), 3)
+		assertEqual(t, len(s.Runs), 3)
 	})
 }

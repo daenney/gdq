@@ -13,21 +13,21 @@ import (
 )
 
 func main() {
-	host := flag.String("host", "", "show events matching this host")
-	runner := flag.String("runner", "", "show events matching this runner")
-	title := flag.String("title", "", "show events matching this title")
+	host := flag.String("host", "", "show runs matching this host")
+	runner := flag.String("runner", "", "show runs matching this runner")
+	title := flag.String("title", "", "show runs matching this title")
 	category := flag.Bool("show-category", false, "show category in the output")
 	platform := flag.Bool("show-platform", false, "show platform in the output")
 	format := flag.String("format", "table", "one of table or json")
-	edition := flag.String("edition", "", "GDQ edition to query. This can be a string or a schedule number and when omitted will result in the current/upcoming schedule being used")
+	event := flag.String("event", "", "GDQ event to query. This can be a string or a event number and when omitted will result in the current/upcoming schedule being used")
 	showVersion := flag.Bool("version", false, "show CLI version and build info")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
 		fmt.Fprintln(flag.CommandLine.Output())
-		fmt.Fprintln(flag.CommandLine.Output(), "When using filters, each filter is applied and the resulting filtered schedule is then filtered with the next filter. This means filters are additive, so you can't say show me events for this host or this runner.")
+		fmt.Fprintln(flag.CommandLine.Output(), "When using filters, each filter is applied and the resulting filtered schedule is then filtered with the next filter. This means filters are additive, so you can't say show me runs for this host or this runner.")
 		fmt.Fprintln(flag.CommandLine.Output())
-		fmt.Fprintln(flag.CommandLine.Output(), "All filters use a case insensitive substring match. This means that passing a filter of '-runner e' will find all events where any runner has the letter 'e' in their handle.")
+		fmt.Fprintln(flag.CommandLine.Output(), "All filters use a case insensitive substring match. This means that passing a filter of '-runner e' will find all runs where any runner has the letter 'e' in their handle.")
 	}
 
 	flag.Parse()
@@ -37,23 +37,23 @@ func main() {
 		os.Exit(0)
 	}
 
-	var ed gdq.Edition
-	if *edition == "" {
-		ed = gdq.Latest
+	var ev gdq.Event
+	if *event == "" {
+		ev = gdq.Latest
 	} else {
-		v, ok := gdq.GetEdition(*edition)
+		v, ok := gdq.GetEvent(*event)
 		if !ok {
-			num, err := strconv.ParseUint(*edition, 10, 64)
+			num, err := strconv.ParseUint(*event, 10, 64)
 			if err != nil {
-				log.Fatalf("Could not find an edition matching: %s\n", *edition)
+				log.Fatalf("Could not find an event matching: %s\n", *event)
 			}
-			ed = gdq.Edition(uint(num))
+			ev = gdq.Event(uint(num))
 		} else {
-			ed = v
+			ev = v
 		}
 	}
 
-	schedule, err := gdq.GetSchedule(ed, newHTTPClient())
+	schedule, err := gdq.GetSchedule(ev, newHTTPClient())
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -68,18 +68,18 @@ func main() {
 		schedule = schedule.ForTitle(*title)
 	}
 
-	if schedule != nil && len(schedule.Events) > 0 {
+	if schedule != nil && len(schedule.Runs) > 0 {
 		switch strings.ToLower(*format) {
 		case "table":
 			w := newWriter(*category, *platform)
-			for _, event := range schedule.Events {
-				w.Write(event)
+			for _, run := range schedule.Runs {
+				w.Write(run)
 			}
 			w.Flush()
 		case "json":
 			enc := json.NewEncoder(os.Stdout)
 			enc.SetIndent("", "    ")
-			if err := enc.Encode(schedule.Events); err != nil {
+			if err := enc.Encode(schedule.Runs); err != nil {
 				log.Fatalln(err)
 			}
 		default:
