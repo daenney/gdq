@@ -7,7 +7,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/daenney/gdq"
+	"github.com/daenney/gdq/v2"
 )
 
 type writer struct {
@@ -23,9 +23,9 @@ func newWriter(category bool, platform bool) *writer {
 	if !w.platform && !w.category {
 		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts")
 	} else if w.platform && w.category {
-		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tPlatform\tCategory")
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tConsole\tCategory")
 	} else if w.platform {
-		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tPlatform")
+		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tConsole")
 	} else if w.category {
 		fmt.Fprintln(w.tw, "Start Time\tTitle\tEstimate\tRunners\tHosts\tCategory")
 
@@ -43,7 +43,7 @@ func (w *writer) Write(run *gdq.Run) {
 			run.Start.Local().Format(time.Stamp),
 			run.Title,
 			run.Estimate,
-			strings.Join(run.Runners, ", "),
+			run.Runners,
 			strings.Join(run.Hosts, ", "),
 		)
 		return
@@ -53,9 +53,9 @@ func (w *writer) Write(run *gdq.Run) {
 			run.Start.Local().Format(time.Stamp),
 			run.Title,
 			run.Estimate,
-			strings.Join(run.Runners, ", "),
+			run.Runners,
 			strings.Join(run.Hosts, ", "),
-			run.Platform,
+			run.Console,
 			run.Category,
 		)
 		return
@@ -65,9 +65,9 @@ func (w *writer) Write(run *gdq.Run) {
 			run.Start.Local().Format(time.Stamp),
 			run.Title,
 			run.Estimate,
-			strings.Join(run.Runners, ", "),
+			run.Runners,
 			strings.Join(run.Hosts, ", "),
-			run.Platform,
+			run.Console,
 		)
 		return
 	}
@@ -76,7 +76,7 @@ func (w *writer) Write(run *gdq.Run) {
 			run.Start.Local().Format(time.Stamp),
 			run.Title,
 			run.Estimate,
-			strings.Join(run.Runners, ", "),
+			run.Runners,
 			strings.Join(run.Hosts, ", "),
 			run.Category,
 		)

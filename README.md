@@ -15,16 +15,16 @@ speedrunning event that collects money for charity. The event is incredibly
 fun, especially if you enjoy seeing your favourite games torn to shreds by
 amazing runners and supported with great commentary and prizes to win.
 
-This repo contains a Go library and CLI for working with the GDQ schedule.
-Since GDQ doesn't have an API for the schedule we rely on parsing the HTML of
-the schedule page instead, so beware this library might break if the design
-of the schedule changes.
+This repo contains a Go library and CLI for working with the GDQ schedule. It uses the
+[Tracker API](https://github.com/GamesDoneQuick/donation-tracker) to retrieve
+the data.
 
 There is also a companion [Matrix](https://matrix.org) bot over at
 [GDQBot](https://github.com/daenney/gdqbot).
 
 ## Installation
 
+### CLI
 There are prebuilt binaries available for every release from v1.0.0 onwards. You
 can find them [over here](https://github.com/daenney/gdq/releases).
 
@@ -40,13 +40,19 @@ can find them [over here](https://github.com/daenney/gdq/releases).
 
 <b id="f1"><sup>1</sup></b> Pending Go 1.16 release [↩](#a1)
 
+### Library
+
+```sh
+$ go get github.com/daenney/gdq/v2
+```
+
 ## Building
 
 You can `go get` the library, or `git clone` and then run a `go build` followed
-by a `go test` to ensure everything is OK.
+by a `go test ./...` to ensure everything is OK.
 
 You can build the CLI using `go build -trimpath -o gdqctl cmd/gdqcli/*.go` or
-install it directly using `go install github.com/daenney/gdq/cmd/gdqcli`. See
+install it directly using `go install github.com/daenney/gdq/v2/cmd/gdqcli`. See
 `go help install` for where the binaries will end up.
 
 To embed the version, commit and date at build time you'll need to add

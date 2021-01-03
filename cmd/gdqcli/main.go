@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/daenney/gdq"
+	"github.com/daenney/gdq/v2"
 )
 
 func main() {
@@ -37,23 +38,33 @@ func main() {
 		os.Exit(0)
 	}
 
+	g := gdq.New(context.Background(), newHTTPClient())
+
 	var ev gdq.Event
 	if *event == "" {
-		ev = gdq.Latest
+		v, err := g.Latest()
+		if err != nil {
+			log.Fatalln(err)
+		}
+		ev = v
 	} else {
-		v, ok := gdq.GetEvent(*event)
+		v, ok := gdq.GetEventByName(*event)
 		if !ok {
 			num, err := strconv.ParseUint(*event, 10, 64)
 			if err != nil {
 				log.Fatalf("Could not find an event matching: %s\n", *event)
 			}
-			ev = gdq.Event(uint(num))
-		} else {
-			ev = v
+			v, ok = gdq.GetEventByID(uint(num))
+			if !ok {
+				ev = gdq.Event{ID: uint(num), Short: "unknown", Name: "unknown", Year: 0}
+			} else {
+				ev = v
+			}
 		}
+		ev = v
 	}
 
-	schedule, err := gdq.GetSchedule(ev, newHTTPClient())
+	schedule, err := g.GetSchedule(ev)
 	if err != nil {
 		log.Fatalln(err)
 	}

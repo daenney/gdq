@@ -3,87 +3,96 @@ package gdq
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
-// Event is the schedule ID of a GDQ event
-type Event uint
-
-// All the GDQ events for which a schedule is available
-const (
-	Latest   Event = 0
-	AGDQ2016 Event = iota + 16
-	SGDQ2016
-	AGDQ2017
-	SGDQ2017
-	HRDQ2017
-	AGDQ2018
-	SGDQ2018
-	GDQX2018
-	AGDQ2019
-	SGDQ2019
-	GDQX2019
-	AGDQ2020
-	FrostFatales2020
-	SGDQ2020
-	CRDQ2020
-	THPSLaunch
-	FleetFatales2020
-	AGDQ2021
-)
-
-//gocyclo:ignore
-func (e Event) String() string {
-	switch e {
-	case Latest:
-		return "latest"
-	case AGDQ2016:
-		return "AGDQ2016"
-	case SGDQ2016:
-		return "SGDQ2016"
-	case AGDQ2017:
-		return "AGDQ2017"
-	case SGDQ2017:
-		return "SGDQ2017"
-	case HRDQ2017:
-		return "HRDQ2017"
-	case AGDQ2018:
-		return "AGDQ2018"
-	case SGDQ2018:
-		return "SGDQ2018"
-	case GDQX2018:
-		return "GDQX2018"
-	case AGDQ2019:
-		return "AGDQ2019"
-	case SGDQ2019:
-		return "SGDQ2019"
-	case GDQX2019:
-		return "GDQX2019"
-	case AGDQ2020:
-		return "AGDQ2020"
-	case FrostFatales2020:
-		return "FrostFatales2020"
-	case SGDQ2020:
-		return "SGDQ2020"
-	case CRDQ2020:
-		return "CRDQ2020"
-	case THPSLaunch:
-		return "Tony Hawk's Pro Skater 1 + 2 Launch Celebration"
-	case FleetFatales2020:
-		return "FleetFatales2020"
-	case AGDQ2021:
-		return "AGDQ2021"
-	default:
-		return fmt.Sprintf("unknown event: %d", e)
-	}
+type eventResp struct {
+	PK     uint `json:"pk"`
+	Fields struct {
+		Short string    `json:"short"`
+		Name  string    `json:"name"`
+		Date  time.Time `json:"datetime"`
+	} `json:"fields"`
 }
 
-var events = map[string]Event{
-	"latest":           Latest,
+type eventsResp []eventResp
+
+// Event is the schedule ID of a GDQ event
+type Event struct {
+	ID    uint
+	Short string
+	Name  string
+	Year  int
+}
+
+const agdq = "Awesome Games Done Quick"
+const sgdq = "Summer Games Done Quick"
+
+// All the GDQ events, sorted by Event.ID
+var (
+	SGDQ2012         = Event{ID: 1, Short: "SGDQ2012", Name: sgdq, Year: 2012}
+	AGDQ2012         = Event{ID: 2, Short: "SGDQ2012", Name: agdq, Year: 2012}
+	SGDQ2011         = Event{ID: 3, Short: "SGDQ2011", Name: sgdq, Year: 2011}
+	JRDQ             = Event{ID: 4, Short: "JRDQ", Name: "Japan Relief Done Quick", Year: 2011}
+	AGDQ2011         = Event{ID: 5, Short: "AGDQ2011", Name: agdq, Year: 2011}
+	CGDQ             = Event{ID: 6, Short: "CGDQ", Name: "Classic Games Done Quick", Year: 2010}
+	AGDQ2013         = Event{ID: 7, Short: "AGDQ2013", Name: agdq, Year: 2013}
+	SGDQ2013         = Event{ID: 8, Short: "SGDQ2013", Name: sgdq, Year: 2013}
+	AGDQ2014         = Event{ID: 9, Short: "AGDQ2014", Name: agdq, Year: 2014}
+	SGDQ2014         = Event{ID: 10, Short: "SGDQ2014", Name: sgdq, Year: 2014}
+	AGDQ2015         = Event{ID: 12, Short: "AGDQ2015", Name: agdq, Year: 2015}
+	SPOOK            = Event{ID: 13, Short: "SPOOK", Name: "Speedrun Spooktacular", Year: 2012}
+	SGDQ2015         = Event{ID: 16, Short: "SGDQ2015", Name: sgdq, Year: 2015}
+	AGDQ2016         = Event{ID: 17, Short: "AGDQ2016", Name: agdq, Year: 2016}
+	SGDQ2016         = Event{ID: 18, Short: "SGDQ2016", Name: sgdq, Year: 2016}
+	AGDQ2017         = Event{ID: 19, Short: "AGDQ2017", Name: agdq, Year: 2017}
+	SGDQ2017         = Event{ID: 20, Short: "SGDQ2017", Name: sgdq, Year: 2017}
+	HRDQ             = Event{ID: 21, Short: "HRDQ", Name: "Harvey Relief Done Quick", Year: 2017}
+	AGDQ2018         = Event{ID: 22, Short: "AGDQ2018", Name: agdq, Year: 2018}
+	SGDQ2018         = Event{ID: 23, Short: "SGDQ2018", Name: sgdq, Year: 2018}
+	GDQX2018         = Event{ID: 24, Short: "GDQX2018", Name: "Games Done Quick Express", Year: 2018}
+	AGDQ2019         = Event{ID: 25, Short: "AGDQ2019", Name: agdq, Year: 2019}
+	SGDQ2019         = Event{ID: 26, Short: "SGDQ2019", Name: sgdq, Year: 2019}
+	GDQX2019         = Event{ID: 27, Short: "GDQX2019", Name: "Games Done Quick Express", Year: 2019}
+	AGDQ2020         = Event{ID: 28, Short: "AGDQ2020", Name: agdq, Year: 2020}
+	FrostFatales2020 = Event{ID: 29, Short: "FrostFatales2020", Name: "Frost Fatales", Year: 2020}
+	SGDQ2020         = Event{ID: 30, Short: "SGDQ2020", Name: sgdq, Year: 2020}
+	CRDQ             = Event{ID: 31, Short: "CRDQ", Name: "Corona Relief Done Quick", Year: 2020}
+	THPSLaunch       = Event{ID: 32, Short: "THPSLaunch", Name: "Tony Hawk's Pro Skater 1 + 2 Launch Celebration", Year: 2020}
+	FleetFatales2020 = Event{ID: 33, Short: "FleetFatales2020", Name: "Fleet Fatales", Year: 2020}
+	AGDQ2021         = Event{ID: 34, Short: "AGDQ2021", Name: agdq + " Online", Year: 2021}
+)
+
+func (e Event) String() string {
+	return fmt.Sprintf("%s (%d)", e.Name, e.Year)
+}
+
+var eventsByName = map[string]Event{
+	"classic":          CGDQ,
+	"cgdq":             CGDQ,
+	"cgdq2010":         CGDQ,
+	"agdq2011":         AGDQ2011,
+	"japan":            JRDQ,
+	"jrdq":             JRDQ,
+	"jrdq2011":         JRDQ,
+	"sgdq2011":         SGDQ2011,
+	"agdq2012":         AGDQ2012,
+	"sgdq2012":         SGDQ2012,
+	"spook":            SPOOK,
+	"spook2012":        SPOOK,
+	"agdq2013":         AGDQ2013,
+	"sgdq2013":         SGDQ2013,
+	"agdq2014":         AGDQ2014,
+	"sgdq2014":         SGDQ2014,
+	"agdq2015":         AGDQ2015,
+	"sgdq2015":         SGDQ2015,
 	"agdq2016":         AGDQ2016,
 	"sgdq2016":         SGDQ2016,
 	"agdq2017":         AGDQ2017,
 	"sgdq2017":         SGDQ2017,
-	"hrdq2017":         HRDQ2017,
+	"harvey":           HRDQ,
+	"hrdq":             HRDQ,
+	"hrdq2017":         HRDQ,
 	"agdq2018":         AGDQ2018,
 	"sgdq2018":         SGDQ2018,
 	"gdqx2018":         GDQX2018,
@@ -93,14 +102,57 @@ var events = map[string]Event{
 	"agdq2020":         AGDQ2020,
 	"frostfatales2020": FrostFatales2020,
 	"sgdq2020":         SGDQ2020,
-	"crdq2020":         CRDQ2020,
+	"corona":           CRDQ,
+	"crdq":             CRDQ,
+	"crdq2020":         CRDQ,
+	"thps":             THPSLaunch,
 	"thpslaunch":       THPSLaunch,
 	"fleetfatales2020": FleetFatales2020,
 	"agdq2021":         AGDQ2021,
 }
 
-// GetEvent tries to find an event matching the input
-func GetEvent(input string) (ev Event, found bool) {
-	ev, ok := events[strings.ToLower(input)]
+// GetEventByName tries to find an event matching the input
+func GetEventByName(input string) (ev Event, found bool) {
+	ev, ok := eventsByName[strings.ToLower(input)]
+	return ev, ok
+}
+
+var eventsByID = map[uint]Event{
+	1:  SGDQ2012,
+	2:  AGDQ2012,
+	3:  SGDQ2011,
+	4:  JRDQ,
+	5:  AGDQ2011,
+	6:  CGDQ,
+	7:  AGDQ2013,
+	8:  SGDQ2013,
+	9:  AGDQ2014,
+	10: SGDQ2014,
+	12: AGDQ2015,
+	13: SPOOK,
+	16: SGDQ2015,
+	17: AGDQ2016,
+	18: SGDQ2016,
+	19: AGDQ2017,
+	20: SGDQ2017,
+	21: HRDQ,
+	22: AGDQ2018,
+	23: SGDQ2018,
+	24: GDQX2018,
+	25: AGDQ2019,
+	26: SGDQ2019,
+	27: GDQX2019,
+	28: AGDQ2020,
+	29: FrostFatales2020,
+	30: SGDQ2020,
+	31: CRDQ,
+	32: THPSLaunch,
+	33: FleetFatales2020,
+	34: AGDQ2021,
+}
+
+// GetEventByID fetches the event by ID
+func GetEventByID(id uint) (ev Event, found bool) {
+	ev, ok := eventsByID[id]
 	return ev, ok
 }
