@@ -40,7 +40,7 @@ func main() {
 
 	g := gdq.New(context.Background(), newHTTPClient())
 
-	var ev gdq.Event
+	var ev *gdq.Event
 	if *event == "" {
 		v, err := g.Latest()
 		if err != nil {
@@ -56,7 +56,7 @@ func main() {
 			}
 			v, ok = gdq.GetEventByID(uint(num))
 			if !ok {
-				ev = gdq.Event{ID: uint(num), Short: "unknown", Name: "unknown", Year: 0}
+				ev = &gdq.Event{ID: uint(num), Short: "unknown", Name: "unknown", Year: 0}
 			} else {
 				ev = v
 			}
@@ -64,7 +64,7 @@ func main() {
 		ev = v
 	}
 
-	schedule, err := g.GetSchedule(ev)
+	schedule, err := g.Schedule(ev)
 	if err != nil {
 		log.Fatalln(err)
 	}

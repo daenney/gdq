@@ -187,7 +187,7 @@ func TestGetSchedule(t *testing.T) {
 		c := New(context.Background(), http.DefaultClient)
 		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
 
-		s, err := c.GetSchedule(AGDQ2021)
+		s, err := c.Schedule(&AGDQ2021)
 		assert.Equal(t, err, nil)
 
 		assert.Equal(t, len(s.Runs), 3)
@@ -203,7 +203,7 @@ func TestGetSchedule(t *testing.T) {
 		c := New(context.Background(), http.DefaultClient)
 		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
 
-		_, err := c.GetSchedule(AGDQ2021)
+		_, err := c.Schedule(&AGDQ2021)
 		assert.Error(t, err)
 	})
 }

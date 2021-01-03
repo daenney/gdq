@@ -140,9 +140,9 @@ var eventsByName = map[string]Event{
 }
 
 // GetEventByName tries to find an event matching the input
-func GetEventByName(input string) (ev Event, found bool) {
-	ev, ok := eventsByName[strings.ToLower(input)]
-	return ev, ok
+func GetEventByName(input string) (ev *Event, found bool) {
+	e, ok := eventsByName[strings.ToLower(input)]
+	return &e, ok
 }
 
 var eventsByID = map[uint]Event{
@@ -180,7 +180,7 @@ var eventsByID = map[uint]Event{
 }
 
 // GetEventByID fetches the event by ID
-func GetEventByID(id uint) (ev Event, found bool) {
-	ev, ok := eventsByID[id]
-	return ev, ok
+func GetEventByID(id uint) (ev *Event, found bool) {
+	e, ok := eventsByID[id]
+	return &e, ok
 }

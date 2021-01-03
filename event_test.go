@@ -19,7 +19,7 @@ func TestGetEvent(t *testing.T) {
 	t.Run("known", func(t *testing.T) {
 		e, ok := GetEventByName("AgdQ2016")
 		assert.True(t, ok)
-		assert.Equal(t, AGDQ2016, e)
+		assert.Equal(t, &AGDQ2016, e)
 	})
 }
 
@@ -31,7 +31,7 @@ func TestGetEventByID(t *testing.T) {
 	t.Run("known", func(t *testing.T) {
 		ev, ok := GetEventByID(17)
 		assert.True(t, ok)
-		assert.Equal(t, AGDQ2016, ev)
+		assert.Equal(t, &AGDQ2016, ev)
 	})
 }
 

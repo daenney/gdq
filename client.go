@@ -30,32 +30,28 @@ func New(ctx context.Context, client *http.Client) *Client {
 }
 
 // Latest returns the latest event
-func (c *Client) Latest() (Event, error) {
+func (c *Client) Latest() (*Event, error) {
 	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search?type=event", c.base))
 	if err != nil {
-		return Event{}, err
+		return nil, err
 	}
 
 	var resp = eventsResp{}
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
-		return Event{}, err
+		return nil, err
 	}
 
 	if len(resp) == 0 {
-		return Event{}, fmt.Errorf("there are no known events")
+		return nil, fmt.Errorf("there are no known events")
 	}
 
-	ev := resp[len(resp)-1]
-	return ev.toEvent(), nil
+	ev := resp[len(resp)-1].toEvent()
+	return &ev, nil
 }
 
-// GetSchedule returns the Schedule for a GDQ event
-//
-// A client has to be passed in. Please make sure to configure your client
-// correctly, so not http.DefaultClient. Be nice to server admins and make
-// sure your client sets a User-Agent header.
-func (c *Client) GetSchedule(ev Event) (*Schedule, error) {
+// Schedule returns the Schedule for a GDQ event
+func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 	grp, ctx := errgroup.WithContext(c.ctx)
 	queries := []string{
 		fmt.Sprintf("%s/search?type=run&event=%d", c.base, ev.ID),
