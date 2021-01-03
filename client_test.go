@@ -136,3 +136,48 @@ func TestLatest(t *testing.T) {
 		})
 	})
 }
+
+func TestDonations(t *testing.T) {
+	t.Run("with invalid body", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, `hello`)
+		}))
+		defer ts.Close()
+
+		c := New(context.Background(), http.DefaultClient)
+		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
+
+		_, err := c.Donations(&Event{})
+		assert.NotNil(t, err)
+	})
+	t.Run("with event", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, `[{"model":"tracker.event","pk":1,"fields":{"short":"event1","name":"Event 1 2020","hashtag":"","use_one_step_screening":true,"receivername":"","targetamount":100,"minimumdonation":1,"paypalemail":"example@example.com","paypalcurrency":"USD","datetime":"2020-05-01T13:00:00Z","timezone":"US/Eastern","locked":true,"allow_donations":true,"canonical_url":"https://gamesdonequick.com/tracker/event/1","public":"Event 1","amount":101.3,"count":5,"max":10,"avg":3.5,"allowed_prize_countries":[],"disallowed_prize_regions":[]}}]`)
+		}))
+		defer ts.Close()
+
+		c := New(context.Background(), http.DefaultClient)
+		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
+
+		do, err := c.Donations(&Event{})
+		assert.Nil(t, err)
+		assert.Equal(t, &Donations{
+			Total:   101.3,
+			Max:     10,
+			Average: 3.5,
+			Count:   5,
+		}, do)
+	})
+	t.Run("without events", func(t *testing.T) {
+		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `[]`)
+		}))
+		defer ts.Close()
+
+		c := New(context.Background(), http.DefaultClient)
+		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
+
+		_, err := c.Donations(&Event{})
+		assert.Error(t, err)
+	})
+}

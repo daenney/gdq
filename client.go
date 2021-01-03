@@ -50,6 +50,27 @@ func (c *Client) Latest() (*Event, error) {
 	return &ev, nil
 }
 
+// Donations returns donations for an event
+func (c *Client) Donations(ev *Event) (*Donations, error) {
+	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search?type=event&id=%d", c.base, ev.ID))
+	if err != nil {
+		return nil, err
+	}
+
+	var resp = eventsResp{}
+	err = json.Unmarshal(body, &resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resp) == 0 {
+		return nil, fmt.Errorf("no data for event: %s (%d)", ev.Name, ev.ID)
+	}
+
+	do := resp[0].toEvent().Donations
+	return &do, nil
+}
+
 // Schedule returns the Schedule for a GDQ event
 func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 	grp, ctx := errgroup.WithContext(c.ctx)
