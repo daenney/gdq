@@ -47,7 +47,7 @@ func (c *Client) Latest() (Event, error) {
 	}
 
 	ev := resp[len(resp)-1]
-	return Event{ID: ev.PK, Short: ev.Fields.Short, Name: ev.Fields.Name, Year: ev.Fields.Date.Year()}, nil
+	return ev.toEvent(), nil
 }
 
 // GetSchedule returns the Schedule for a GDQ event

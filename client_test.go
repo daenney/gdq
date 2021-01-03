@@ -108,32 +108,6 @@ func TestLatest(t *testing.T) {
 		_, err := c.Latest()
 		assert.NotNil(t, err)
 	})
-	t.Run("with empty body", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprint(w, `[]`)
-		}))
-		defer ts.Close()
-
-		c := New(context.Background(), http.DefaultClient)
-		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
-
-		_, err := c.Latest()
-		assert.NotNil(t, err)
-		assert.Contains(t, err.Error(), "no known events")
-	})
-	t.Run("with unexpected response", func(t *testing.T) {
-		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusBadGateway)
-			fmt.Fprint(w, `[]`)
-		}))
-		defer ts.Close()
-
-		c := New(context.Background(), http.DefaultClient)
-		c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
-
-		_, err := c.Latest()
-		assert.NotNil(t, err)
-	})
 	t.Run("with events", func(t *testing.T) {
 		ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprint(w, `[{"model":"tracker.event","pk":1,"fields":{"short":"event1","name":"Event 1 2020","hashtag":"","use_one_step_screening":true,"receivername":"","targetamount":100,"minimumdonation":1,"paypalemail":"example@example.com","paypalcurrency":"USD","datetime":"2020-05-01T13:00:00Z","timezone":"US/Eastern","locked":true,"allow_donations":true,"canonical_url":"https://gamesdonequick.com/tracker/event/1","public":"Event 1","amount":0,"count":0,"max":0,"avg":0,"allowed_prize_countries":[],"disallowed_prize_regions":[]}},{"model":"tracker.event","pk":2,"fields":{"short":"event2","name":"Event 2 2020","hashtag":"","use_one_step_screening":true,"receivername":"","targetamount":100,"minimumdonation":1,"paypalemail":"example@example.com","paypalcurrency":"USD","datetime":"2020-10-01T13:00:00Z","timezone":"US/Eastern","locked":true,"allow_donations":true,"canonical_url":"https://gamesdonequick.com/tracker/event/2","public":"Event 2 2020","amount":0,"count":0,"max":0,"avg":0,"allowed_prize_countries":[],"disallowed_prize_regions":[]}}]`)
@@ -146,5 +120,19 @@ func TestLatest(t *testing.T) {
 		ev, err := c.Latest()
 		assert.Nil(t, err)
 		assert.Equal(t, uint(2), ev.ID)
+	})
+	t.Run("without events", func(t *testing.T) {
+		t.Run("with not one event", func(t *testing.T) {
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintf(w, `[]`)
+			}))
+			defer ts.Close()
+
+			c := New(context.Background(), http.DefaultClient)
+			c.base = fmt.Sprintf("http://%s", ts.Listener.Addr().String())
+
+			_, err := c.Latest()
+			assert.Error(t, err)
+		})
 	})
 }

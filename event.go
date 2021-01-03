@@ -9,20 +9,48 @@ import (
 type eventResp struct {
 	PK     uint `json:"pk"`
 	Fields struct {
-		Short string    `json:"short"`
-		Name  string    `json:"name"`
-		Date  time.Time `json:"datetime"`
+		Short          string    `json:"short"`
+		Name           string    `json:"name"`
+		Date           time.Time `json:"datetime"`
+		DonationsTotal float64   `json:"amount"`
+		DonationsCount uint      `json:"count"`
+		DonationsMax   float64   `json:"max"`
+		DonationsAvg   float64   `json:"avg"`
 	} `json:"fields"`
+}
+
+func (e eventResp) toEvent() Event {
+	return Event{
+		ID:    e.PK,
+		Short: e.Fields.Short,
+		Name:  e.Fields.Name,
+		Year:  e.Fields.Date.Year(),
+		Donations: Donations{
+			Total:   e.Fields.DonationsTotal,
+			Max:     e.Fields.DonationsMax,
+			Count:   e.Fields.DonationsCount,
+			Average: e.Fields.DonationsAvg,
+		},
+	}
 }
 
 type eventsResp []eventResp
 
 // Event is the schedule ID of a GDQ event
 type Event struct {
-	ID    uint
-	Short string
-	Name  string
-	Year  int
+	ID        uint      `json:"id"`
+	Short     string    `json:"short"`
+	Name      string    `json:"name"`
+	Year      int       `json:"year"`
+	Donations Donations `json:"donations"`
+}
+
+// Donations is the donation summary of a GDQ event
+type Donations struct {
+	Total   float64 `json:"total"`
+	Max     float64 `json:"max"`
+	Count   uint    `json:"count"`
+	Average float64 `json:"average"`
 }
 
 const agdq = "Awesome Games Done Quick"

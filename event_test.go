@@ -38,3 +38,9 @@ func TestGetEventByID(t *testing.T) {
 func TestEventString(t *testing.T) {
 	assert.Equal(t, "Awesome Games Done Quick (2016)", AGDQ2016.String())
 }
+
+func TestToEvent(t *testing.T) {
+	e := eventResp{}
+	ev := e.toEvent()
+	assert.Equal(t, Event{Year: 1}, ev)
+}
