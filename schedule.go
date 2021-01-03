@@ -2,7 +2,6 @@ package gdq
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 	"sync"
 	"time"
@@ -12,11 +11,7 @@ import (
 	"golang.org/x/text/secure/precis"
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
-
-	"github.com/anaskhan96/soup"
 )
-
-const scheduleURL = "https://gamesdonequick.com/schedule"
 
 // Schedule represents the runs occurring at a GDQ event
 type Schedule struct {
@@ -61,11 +56,11 @@ func (s *Schedule) load(runs []*Run) {
 	for _, run := range runs {
 		s.Runs = append(s.Runs, run)
 		for _, runner := range run.Runners {
-			rev, ok := s.byRunner[runner]
+			rev, ok := s.byRunner[runner.Handle]
 			if ok {
-				s.byRunner[runner] = append(rev, run)
+				s.byRunner[runner.Handle] = append(rev, run)
 			} else {
-				s.byRunner[runner] = []*Run{run}
+				s.byRunner[runner.Handle] = []*Run{run}
 			}
 		}
 		for _, host := range run.Hosts {
@@ -170,57 +165,6 @@ func (s *Schedule) NextRun() *Run {
 		}
 	}
 	return runs
-}
-
-// GetSchedule returns the Schedule for a GDQ event
-//
-// A client has to be passed in. Please make sure to configure your client
-// correctly, so not http.DefaultClient. Be nice to server admins and make
-// sure your client sets a User-Agent header.
-func GetSchedule(id Event, client *http.Client) (*Schedule, error) {
-	if client == nil {
-		return nil, fmt.Errorf("missing *http.Client")
-	}
-
-	resp, err := soup.GetWithClient(fmt.Sprintf("%s/%d", scheduleURL, id), client)
-	if err != nil {
-		return nil, fmt.Errorf("failed to fetch schedule: %w", err)
-	}
-
-	doc := soup.HTMLParse(resp)
-	if doc.Error != nil {
-		return nil, ErrInvalidSchedule
-	}
-	table := doc.Find("table", "id", "runTable")
-	if table.Error != nil {
-		return nil, ErrMissingSchedule
-	}
-	body := table.Find("tbody")
-	if body.Error != nil {
-		return nil, ErrMissingSchedule
-	}
-
-	rows := body.FindAll("tr")
-	if len(rows) < 2 {
-		return nil, ErrMissingSchedule
-	}
-
-	if len(rows)%2 != 0 {
-		return nil, ErrInvalidSchedule
-	}
-
-	runs := []*Run{}
-	for i := 0; i < len(rows); i += 2 {
-		run, err := runFromHTML(rows[i], rows[i+1])
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse rows %s and %s as a run: %w", rows[i].HTML(), rows[i+1].HTML(), err)
-		}
-		runs = append(runs, run)
-	}
-
-	schedule := NewScheduleFrom(runs)
-
-	return schedule, nil
 }
 
 // normalised transforms a string to a variant that has punctuation and
