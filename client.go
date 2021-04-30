@@ -31,7 +31,7 @@ func New(ctx context.Context, client *http.Client) *Client {
 
 // Latest returns the latest event
 func (c *Client) Latest() (*Event, error) {
-	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search?type=event", c.base))
+	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search/?type=event", c.base))
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (c *Client) Latest() (*Event, error) {
 
 // Donations returns donations for an event
 func (c *Client) Donations(ev *Event) (*Donations, error) {
-	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search?type=event&id=%d", c.base, ev.ID))
+	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search/?type=event&id=%d", c.base, ev.ID))
 	if err != nil {
 		return nil, err
 	}
@@ -75,8 +75,8 @@ func (c *Client) Donations(ev *Event) (*Donations, error) {
 func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 	grp, ctx := errgroup.WithContext(c.ctx)
 	queries := []string{
-		fmt.Sprintf("%s/search?type=run&event=%d", c.base, ev.ID),
-		fmt.Sprintf("%s/search?type=runner&event=%d", c.base, ev.ID),
+		fmt.Sprintf("%s/search/?type=run&event=%d", c.base, ev.ID),
+		fmt.Sprintf("%s/search/?type=runner&event=%d", c.base, ev.ID),
 		fmt.Sprintf("%s/hosts/%d", c.base, ev.ID),
 	}
 
