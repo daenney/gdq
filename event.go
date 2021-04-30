@@ -89,6 +89,7 @@ var (
 	THPSLaunch       = Event{ID: 32, Short: "THPSLaunch", Name: "Tony Hawk's Pro Skater 1 + 2 Launch Celebration", Year: 2020}
 	FleetFatales2020 = Event{ID: 33, Short: "FleetFatales2020", Name: "Fleet Fatales", Year: 2020}
 	AGDQ2021         = Event{ID: 34, Short: "AGDQ2021", Name: agdq + " Online", Year: 2021}
+	SGDQ2021         = Event{ID: 35, Short: "SGDQ2021", Name: sgdq + " Online", Year: 2021}
 )
 
 func (e Event) String() string {
