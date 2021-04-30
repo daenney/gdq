@@ -32,7 +32,7 @@ func NewSchedule() *Schedule {
 
 // NewScheduleFrom returns a scheduled filled with the runs
 func NewScheduleFrom(runs []*Run) *Schedule {
-	if runs == nil || len(runs) == 0 {
+	if len(runs) == 0 {
 		return NewSchedule()
 	}
 
