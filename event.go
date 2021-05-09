@@ -178,6 +178,7 @@ var eventsByID = map[uint]Event{
 	32: THPSLaunch,
 	33: FleetFatales2020,
 	34: AGDQ2021,
+	35: SGDQ2021,
 }
 
 // GetEventByID fetches the event by ID
