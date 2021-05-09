@@ -9,6 +9,7 @@ type runResp struct {
 	Fields struct {
 		Name     string    `json:"display_name"`
 		Start    time.Time `json:"starttime"`
+		End      time.Time `json:"endtime"`
 		Estimate Duration  `json:"run_time"`
 		Category string    `json:"category"`
 		Console  string    `json:"console"`
@@ -18,10 +19,18 @@ type runResp struct {
 }
 
 func (r runResp) toRun() Run {
+	est := r.Fields.Estimate
+	// A lot of older events have their Estimate always set to 0, and the
+	// same for their setup time. When we run into that, subtract the
+	// start time from the end time. It's not 100% accurate since it doesn't
+	// account for the setup time, but it's better than just showing 0 everywhere
+	if est.Milliseconds() == 0 {
+		est = Duration{r.Fields.End.Sub(r.Fields.Start)}
+	}
 	return Run{
 		Title:    r.Fields.Name,
 		Start:    r.Fields.Start,
-		Estimate: r.Fields.Estimate,
+		Estimate: est,
 		Category: r.Fields.Category,
 		Console:  r.Fields.Console,
 		Hosts:    []string{},
