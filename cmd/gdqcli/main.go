@@ -70,6 +70,11 @@ func main() {
 		log.Fatalln(err)
 	}
 
+	if len(schedule.Runs) == 0 {
+		log.Printf("No runs for event with ID %d: (%s)\n", ev.ID, ev.String())
+		os.Exit(0)
+	}
+
 	if *runner != "" {
 		schedule = schedule.ForRunner(*runner)
 	}
