@@ -60,8 +60,9 @@ func main() {
 			} else {
 				ev = v
 			}
+		} else {
+			ev = v
 		}
-		ev = v
 	}
 
 	schedule, err := g.Schedule(ev)
