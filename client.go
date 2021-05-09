@@ -110,7 +110,7 @@ func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 		return nil, err
 	}
 
-	var hosts = hostsResp{}
+	var hosts = []host{}
 	err = json.Unmarshal(results[2], &hosts)
 	if err != nil {
 		return nil, err
@@ -134,11 +134,13 @@ func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 	}
 
 	for _, host := range hosts {
-		r, ok := runsByID[host.Fields.Run]
-		if !ok {
-			continue
+		for _, run := range host.Runs {
+			r, ok := runsByID[run]
+			if !ok {
+				continue
+			}
+			r.Hosts = append(r.Hosts, host.Handle)
 		}
-		r.Hosts = append(r.Hosts, host.Fields.Handle)
 	}
 
 	schedule := NewScheduleFrom(finalRuns)
