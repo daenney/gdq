@@ -25,6 +25,14 @@ func (h *host) UnmarshalJSON(b []byte) error {
 
 	h.Handle = v.Fields.Handle
 
+	if v.Fields.StartRun > v.Fields.EndRun {
+		start := v.Fields.StartRun
+		end := v.Fields.EndRun
+
+		v.Fields.StartRun = end
+		v.Fields.EndRun = start
+	}
+
 	if v.Fields.StartRun == v.Fields.EndRun {
 		h.Runs = []uint{v.Fields.StartRun}
 	} else {
