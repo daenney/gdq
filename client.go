@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -45,6 +46,10 @@ func (c *Client) Latest() (*Event, error) {
 	if len(resp) == 0 {
 		return nil, fmt.Errorf("there are no known events")
 	}
+
+	sort.Slice(resp, func(i, j int) bool {
+		return resp[i].Fields.Date.Before(resp[j].Fields.Date)
+	})
 
 	ev := resp[len(resp)-1].toEvent()
 	return &ev, nil
