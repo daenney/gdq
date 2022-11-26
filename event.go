@@ -94,6 +94,8 @@ var (
 	AGDQ2022          = Event{ID: 37, Short: "AGDQ2022", Name: agdq + " Online", Year: 2022}
 	FrostFatales2022  = Event{ID: 38, Short: "FrostFatales2022", Name: "Frost Fatales", Year: 2022}
 	SGDQ2022          = Event{ID: 39, Short: "SGDQ2022", Name: sgdq, Year: 2022}
+	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: "Flames Fatales", Year: 2022}
+	AGDQ2023          = Event{ID: 41, Short: "AGDQ2023", Name: sgdq, Year: 2023}
 )
 
 func (e Event) String() string {
@@ -147,6 +149,8 @@ var eventsByName = map[string]Event{
 	"agdq2022":          AGDQ2022,
 	"frostfatales2022":  FrostFatales2022,
 	"sgdq2022":          SGDQ2022,
+	"flamefatales2022":  FlamesFatales2022,
+	"agdq2023":          AGDQ2023,
 }
 
 // GetEventByName tries to find an event matching the input
@@ -192,6 +196,8 @@ var eventsByID = map[uint]Event{
 	37: AGDQ2022,
 	38: FrostFatales2022,
 	39: SGDQ2022,
+	40: FlamesFatales2022,
+	41: AGDQ2023,
 }
 
 // GetEventByID fetches the event by ID
