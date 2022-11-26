@@ -37,7 +37,7 @@ func (c *Client) Latest() (*Event, error) {
 		return nil, err
 	}
 
-	var resp = eventsResp{}
+	resp := eventsResp{}
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func (c *Client) Donations(ev *Event) (*Donations, error) {
 		return nil, err
 	}
 
-	var resp = eventsResp{}
+	resp := eventsResp{}
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
 		return nil, err
@@ -103,19 +103,19 @@ func (c *Client) Schedule(ev *Event) (*Schedule, error) {
 		return nil, err
 	}
 
-	var runs = runsResp{}
+	runs := runsResp{}
 	err := json.Unmarshal(results[0], &runs)
 	if err != nil {
 		return nil, err
 	}
 
-	var runners = runnersResp{}
+	runners := runnersResp{}
 	err = json.Unmarshal(results[1], &runners)
 	if err != nil {
 		return nil, err
 	}
 
-	var hosts = []host{}
+	hosts := []host{}
 	err = json.Unmarshal(results[2], &hosts)
 	if err != nil {
 		return nil, err
@@ -174,7 +174,7 @@ func getWithCtx(ctx context.Context, c *http.Client, url string) ([]byte, error)
 		if err != nil {
 			return nil, fmt.Errorf("client error: %w", err)
 		}
-		var cerr = struct {
+		cerr := struct {
 			Error   string `json:"error"`
 			Message string `json:"exception"`
 		}{}

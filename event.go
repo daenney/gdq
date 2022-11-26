@@ -53,8 +53,10 @@ type Donations struct {
 	Average float64 `json:"average"`
 }
 
-const agdq = "Awesome Games Done Quick"
-const sgdq = "Summer Games Done Quick"
+const (
+	agdq = "Awesome Games Done Quick"
+	sgdq = "Summer Games Done Quick"
+)
 
 // All the GDQ events, sorted by Event.ID
 var (
