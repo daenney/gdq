@@ -97,7 +97,8 @@ var (
 	FrostFatales2022  = Event{ID: 38, Short: "FrostFatales2022", Name: "Frost Fatales", Year: 2022}
 	SGDQ2022          = Event{ID: 39, Short: "SGDQ2022", Name: sgdq, Year: 2022}
 	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: "Flames Fatales", Year: 2022}
-	AGDQ2023          = Event{ID: 41, Short: "AGDQ2023", Name: sgdq, Year: 2023}
+	AGDQ2023          = Event{ID: 41, Short: "AGDQ2023", Name: agdq, Year: 2023}
+	SGDQ2024          = Event{ID: 48, Short: "SGDQ2024", Name: sgdq, Year: 2024}
 )
 
 func (e Event) String() string {
