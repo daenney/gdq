@@ -54,8 +54,10 @@ type Donations struct {
 }
 
 const (
-	agdq = "Awesome Games Done Quick"
-	sgdq = "Summer Games Done Quick"
+	agdq   = "Awesome Games Done Quick"
+	sgdq   = "Summer Games Done Quick"
+	flames = "Flames Fatales"
+	frost  = "Frost Fatales"
 )
 
 // All the GDQ events, sorted by Event.ID
@@ -85,20 +87,26 @@ var (
 	SGDQ2019          = Event{ID: 26, Short: "SGDQ2019", Name: sgdq, Year: 2019}
 	GDQX2019          = Event{ID: 27, Short: "GDQX2019", Name: "Games Done Quick Express", Year: 2019}
 	AGDQ2020          = Event{ID: 28, Short: "AGDQ2020", Name: agdq, Year: 2020}
-	FrostFatales2020  = Event{ID: 29, Short: "FrostFatales2020", Name: "Frost Fatales", Year: 2020}
+	FrostFatales2020  = Event{ID: 29, Short: "FrostFatales2020", Name: frost, Year: 2020}
 	SGDQ2020          = Event{ID: 30, Short: "SGDQ2020", Name: sgdq, Year: 2020}
 	CRDQ              = Event{ID: 31, Short: "CRDQ", Name: "Corona Relief Done Quick", Year: 2020}
 	THPSLaunch        = Event{ID: 32, Short: "THPSLaunch", Name: "Tony Hawk's Pro Skater 1 + 2 Launch Celebration", Year: 2020}
 	FleetFatales2020  = Event{ID: 33, Short: "FleetFatales2020", Name: "Fleet Fatales", Year: 2020}
 	AGDQ2021          = Event{ID: 34, Short: "AGDQ2021", Name: agdq + " Online", Year: 2021}
 	SGDQ2021          = Event{ID: 35, Short: "SGDQ2021", Name: sgdq + " Online", Year: 2021}
-	FlamesFatales2021 = Event{ID: 36, Short: "FlamesFatales2021", Name: "Flames Fatales", Year: 2021}
+	FlamesFatales2021 = Event{ID: 36, Short: "FlamesFatales2021", Name: flames, Year: 2021}
 	AGDQ2022          = Event{ID: 37, Short: "AGDQ2022", Name: agdq + " Online", Year: 2022}
-	FrostFatales2022  = Event{ID: 38, Short: "FrostFatales2022", Name: "Frost Fatales", Year: 2022}
+	FrostFatales2022  = Event{ID: 38, Short: "FrostFatales2022", Name: frost, Year: 2022}
 	SGDQ2022          = Event{ID: 39, Short: "SGDQ2022", Name: sgdq, Year: 2022}
-	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: "Flames Fatales", Year: 2022}
+	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: flames, Year: 2022}
 	AGDQ2023          = Event{ID: 41, Short: "AGDQ2023", Name: agdq, Year: 2023}
+	FrostFatales2023  = Event{ID: 42, Short: "FrostFatales2023", Name: frost, Year: 2023}
+	SGDQ2023          = Event{ID: 43, Short: "SGDQ2023", Name: sgdq, Year: 2023}
+	FlamesFatales2023 = Event{ID: 44, Short: "FlamesFatales2023", Name: flames, Year: 2023}
+	AGDQ2024          = Event{ID: 46, Short: "AGDQ2024", Name: agdq, Year: 2024}
+	FrostFatales2024  = Event{ID: 47, Short: "FrostFatales2024", Name: frost, Year: 2024}
 	SGDQ2024          = Event{ID: 48, Short: "SGDQ2024", Name: sgdq, Year: 2024}
+	FlamesFatales2024 = Event{ID: 49, Short: "FlamesFatales2024", Name: flames, Year: 2024}
 )
 
 func (e Event) String() string {
@@ -154,6 +162,13 @@ var eventsByName = map[string]Event{
 	"sgdq2022":          SGDQ2022,
 	"flamefatales2022":  FlamesFatales2022,
 	"agdq2023":          AGDQ2023,
+	"frostfatales2023":  FrostFatales2023,
+	"sgqd2023":          SGDQ2023,
+	"flamesfatales2023": FlamesFatales2023,
+	"agdq2024":          AGDQ2024,
+	"frostfatales2024":  FrostFatales2024,
+	"sgdq2024":          SGDQ2024,
+	"flamesfatales2024": FlamesFatales2024,
 }
 
 // GetEventByName tries to find an event matching the input
@@ -201,6 +216,13 @@ var eventsByID = map[uint]Event{
 	39: SGDQ2022,
 	40: FlamesFatales2022,
 	41: AGDQ2023,
+	42: FrostFatales2023,
+	43: SGDQ2023,
+	44: FlamesFatales2023,
+	46: AGDQ2024,
+	47: FrostFatales2024,
+	48: SGDQ2024,
+	49: FlamesFatales2024,
 }
 
 // GetEventByID fetches the event by ID
