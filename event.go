@@ -83,10 +83,10 @@ var (
 	HRDQ              = Event{ID: 21, Short: "HRDQ", Name: "Harvey Relief Done Quick", Year: 2017}
 	AGDQ2018          = Event{ID: 22, Short: "AGDQ2018", Name: agdq, Year: 2018}
 	SGDQ2018          = Event{ID: 23, Short: "SGDQ2018", Name: sgdq, Year: 2018}
-	GDQX2018          = Event{ID: 24, Short: "GDQX2018", Name: "Games Done Quick Express", Year: 2018}
+	GDQX2018          = Event{ID: 24, Short: "GDQX2018", Name: express, Year: 2018}
 	AGDQ2019          = Event{ID: 25, Short: "AGDQ2019", Name: agdq, Year: 2019}
 	SGDQ2019          = Event{ID: 26, Short: "SGDQ2019", Name: sgdq, Year: 2019}
-	GDQX2019          = Event{ID: 27, Short: "GDQX2019", Name: "Games Done Quick Express", Year: 2019}
+	GDQX2019          = Event{ID: 27, Short: "GDQX2019", Name: express, Year: 2019}
 	AGDQ2020          = Event{ID: 28, Short: "AGDQ2020", Name: agdq, Year: 2020}
 	FrostFatales2020  = Event{ID: 29, Short: "FrostFatales2020", Name: frost, Year: 2020}
 	SGDQ2020          = Event{ID: 30, Short: "SGDQ2020", Name: sgdq, Year: 2020}
@@ -104,6 +104,7 @@ var (
 	FrostFatales2023  = Event{ID: 42, Short: "FrostFatales2023", Name: frost, Year: 2023}
 	SGDQ2023          = Event{ID: 43, Short: "SGDQ2023", Name: sgdq, Year: 2023}
 	FlamesFatales2023 = Event{ID: 44, Short: "FlamesFatales2023", Name: flame, Year: 2023}
+	GDQX2023          = Event{ID: 45, Short: "GDQX2023", Name: express, Year: 2023}
 	AGDQ2024          = Event{ID: 46, Short: "AGDQ2024", Name: agdq, Year: 2024}
 	FrostFatales2024  = Event{ID: 47, Short: "FrostFatales2024", Name: frost, Year: 2024}
 	SGDQ2024          = Event{ID: 48, Short: "SGDQ2024", Name: sgdq, Year: 2024}
@@ -168,6 +169,7 @@ var eventsByName = map[string]Event{
 	"frostfatales2023":  FrostFatales2023,
 	"sgqd2023":          SGDQ2023,
 	"flamesfatales2023": FlamesFatales2023,
+	"gdqx2023":          GDQX2023,
 	"agdq2024":          AGDQ2024,
 	"frostfatales2024":  FrostFatales2024,
 	"sgdq2024":          SGDQ2024,
