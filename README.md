@@ -32,11 +32,9 @@ can find them [over here](https://github.com/daenney/gdq/releases).
 |---|---|---|
 |Windows|amd64|✅|
 |macOS|amd64|✅|
-|macOS|arm64/M1|✅|
+|macOS|arm64 (Apple Silicon)|✅|
 |Linux|amd64|✅|
 |Linux|arm64|✅|
-|Linux|armv7/amrhf|✅|
-|Linux|armv6/arm|✅|
 
 ### Library
 
