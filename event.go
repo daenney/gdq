@@ -54,10 +54,10 @@ type Donations struct {
 }
 
 const (
-	agdq   = "Awesome Games Done Quick"
-	sgdq   = "Summer Games Done Quick"
-	flames = "Flames Fatales"
-	frost  = "Frost Fatales"
+	agdq  = "Awesome Games Done Quick"
+	sgdq  = "Summer Games Done Quick"
+	flame = "Flame Fatales"
+	frost = "Frost Fatales"
 )
 
 // All the GDQ events, sorted by Event.ID
@@ -94,19 +94,19 @@ var (
 	FleetFatales2020  = Event{ID: 33, Short: "FleetFatales2020", Name: "Fleet Fatales", Year: 2020}
 	AGDQ2021          = Event{ID: 34, Short: "AGDQ2021", Name: agdq + " Online", Year: 2021}
 	SGDQ2021          = Event{ID: 35, Short: "SGDQ2021", Name: sgdq + " Online", Year: 2021}
-	FlamesFatales2021 = Event{ID: 36, Short: "FlamesFatales2021", Name: flames, Year: 2021}
+	FlamesFatales2021 = Event{ID: 36, Short: "FlamesFatales2021", Name: flame, Year: 2021}
 	AGDQ2022          = Event{ID: 37, Short: "AGDQ2022", Name: agdq + " Online", Year: 2022}
 	FrostFatales2022  = Event{ID: 38, Short: "FrostFatales2022", Name: frost, Year: 2022}
 	SGDQ2022          = Event{ID: 39, Short: "SGDQ2022", Name: sgdq, Year: 2022}
-	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: flames, Year: 2022}
+	FlamesFatales2022 = Event{ID: 40, Short: "FlamesFatales2022", Name: flame, Year: 2022}
 	AGDQ2023          = Event{ID: 41, Short: "AGDQ2023", Name: agdq, Year: 2023}
 	FrostFatales2023  = Event{ID: 42, Short: "FrostFatales2023", Name: frost, Year: 2023}
 	SGDQ2023          = Event{ID: 43, Short: "SGDQ2023", Name: sgdq, Year: 2023}
-	FlamesFatales2023 = Event{ID: 44, Short: "FlamesFatales2023", Name: flames, Year: 2023}
+	FlamesFatales2023 = Event{ID: 44, Short: "FlamesFatales2023", Name: flame, Year: 2023}
 	AGDQ2024          = Event{ID: 46, Short: "AGDQ2024", Name: agdq, Year: 2024}
 	FrostFatales2024  = Event{ID: 47, Short: "FrostFatales2024", Name: frost, Year: 2024}
 	SGDQ2024          = Event{ID: 48, Short: "SGDQ2024", Name: sgdq, Year: 2024}
-	FlamesFatales2024 = Event{ID: 49, Short: "FlamesFatales2024", Name: flames, Year: 2024}
+	FlamesFatales2024 = Event{ID: 49, Short: "FlamesFatales2024", Name: flame, Year: 2024}
 )
 
 func (e Event) String() string {
