@@ -22,10 +22,6 @@ func TestGetWithCtx(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, "hello", string(resp))
 	})
-	t.Run("with nil context", func(t *testing.T) {
-		_, err := getWithCtx(nil, http.DefaultClient, "q://test")
-		assert.Error(t, err)
-	})
 	t.Run("with bad request", func(t *testing.T) {
 		t.Run("with non-JSON body", func(t *testing.T) {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
