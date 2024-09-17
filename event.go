@@ -54,10 +54,11 @@ type Donations struct {
 }
 
 const (
-	agdq  = "Awesome Games Done Quick"
-	sgdq  = "Summer Games Done Quick"
-	flame = "Flame Fatales"
-	frost = "Frost Fatales"
+	agdq    = "Awesome Games Done Quick"
+	sgdq    = "Summer Games Done Quick"
+	flame   = "Flame Fatales"
+	frost   = "Frost Fatales"
+	express = "Games Done Quick Express"
 )
 
 // All the GDQ events, sorted by Event.ID
@@ -107,6 +108,8 @@ var (
 	FrostFatales2024  = Event{ID: 47, Short: "FrostFatales2024", Name: frost, Year: 2024}
 	SGDQ2024          = Event{ID: 48, Short: "SGDQ2024", Name: sgdq, Year: 2024}
 	FlamesFatales2024 = Event{ID: 49, Short: "FlamesFatales2024", Name: flame, Year: 2024}
+	PAXWest2024       = Event{ID: 50, Short: "PAXWest2024", Name: "Speedrun Stage @ PAX West", Year: 2024}
+	GDQX2024          = Event{ID: 51, Short: "GDQX2024", Name: express, Year: 2024}
 )
 
 func (e Event) String() string {
@@ -169,6 +172,8 @@ var eventsByName = map[string]Event{
 	"frostfatales2024":  FrostFatales2024,
 	"sgdq2024":          SGDQ2024,
 	"flamesfatales2024": FlamesFatales2024,
+	"paxwest2024":       PAXWest2024,
+	"gdqx2024":          GDQX2024,
 }
 
 // GetEventByName tries to find an event matching the input
