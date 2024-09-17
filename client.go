@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"sort"
 	"time"
@@ -168,9 +168,9 @@ func getWithCtx(ctx context.Context, c *http.Client, url string) ([]byte, error)
 
 	switch resp.StatusCode {
 	case http.StatusOK:
-		return ioutil.ReadAll(resp.Body)
+		return io.ReadAll(resp.Body)
 	case http.StatusBadRequest:
-		msg, err := ioutil.ReadAll(resp.Body)
+		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("client error: %w", err)
 		}
