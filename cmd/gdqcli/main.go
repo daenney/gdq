@@ -22,6 +22,7 @@ func main() {
 	format := flag.String("format", "table", "one of table or json")
 	event := flag.String("event", "", "GDQ event to query. This can be a string or a event number and when omitted will result in the current/upcoming schedule being used")
 	showVersion := flag.Bool("version", false, "show CLI version and build info")
+	userAgent := flag.String("user-agent", "", "user-agent to use when querying. If omitted it'll use Go's default user-agent. Set this to something GDQ staff can contact you at in case your usage causes a problem")
 	flag.Usage = func() {
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of %s:\n", os.Args[0])
 		flag.PrintDefaults()
@@ -41,8 +42,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	g := gdq.New(newHTTPClient())
-
+	g := gdq.New(newHTTPClient(*userAgent))
 	var ev *gdq.Event
 	if *event == "" {
 		v, err := g.Events(ctx)
