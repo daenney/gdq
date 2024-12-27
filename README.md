@@ -1,5 +1,5 @@
 <h1 align="center">
-🏃 GDQ 🎮
+🎮 GDQ 🏃
 </h1>
 <h4 align="center">A Go library and CLI for Games Done Quick</h4>
 <p align="center">
@@ -39,7 +39,7 @@ can find them [over here](https://github.com/daenney/gdq/releases).
 ### Library
 
 ```sh
-$ go get github.com/daenney/gdq/v2
+$ go get github.com/daenney/gdq/v3
 ```
 
 ## Building
@@ -47,13 +47,9 @@ $ go get github.com/daenney/gdq/v2
 You can `go get` the library, or `git clone` and then run a `go build` followed
 by a `go test ./...` to ensure everything is OK.
 
-You can build the CLI using `go build -trimpath -o gdqctl cmd/gdqcli/*.go` or
-install it directly using `go install github.com/daenney/gdq/v2/cmd/gdqcli`. See
+You can build the CLI using `go build -trimpath -o gdqcli cmd/gdqcli/*.go` or
+install it directly using `go install github.com/daenney/gdq/v3/cmd/gdqcli`. See
 `go help install` for where the binaries will end up.
-
-To embed the version, commit and date at build time you'll need to add
-`-X main.version=VERSION -X main.commit=SHA -X main.date=DATE` and compute
-the right values yourself.
 
 ## Contributing
 

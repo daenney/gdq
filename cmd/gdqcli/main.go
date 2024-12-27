@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/daenney/gdq/v2"
+	"github.com/daenney/gdq/v3"
 )
 
 func main() {
@@ -38,15 +38,18 @@ func main() {
 		os.Exit(0)
 	}
 
-	g := gdq.New(context.Background(), newHTTPClient())
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	g := gdq.New(newHTTPClient())
 
 	var ev *gdq.Event
 	if *event == "" {
-		v, err := g.Latest()
+		v, err := g.Events(ctx)
 		if err != nil {
 			log.Fatalln(err)
 		}
-		ev = v
+		ev = v[0]
 	} else {
 		v, ok := gdq.GetEventByName(*event)
 		if !ok {
@@ -65,7 +68,7 @@ func main() {
 		}
 	}
 
-	schedule, err := g.Schedule(ev)
+	schedule, err := g.Schedule(ctx, ev.ID)
 	if err != nil {
 		log.Fatalln(err)
 	}
