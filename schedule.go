@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
-// Schedule represents the runs occurring at a GDQ event
+// Schedule represents the runs occurring at a GDQ event.
 type Schedule struct {
 	Runs     []*Run
 	byRunner map[string][]*Run
@@ -21,7 +21,7 @@ type Schedule struct {
 	l        sync.RWMutex
 }
 
-// NewSchedule returns an empty Schedule
+// NewSchedule returns an empty Schedule.
 func NewSchedule() *Schedule {
 	return &Schedule{
 		Runs:     []*Run{},
@@ -30,141 +30,138 @@ func NewSchedule() *Schedule {
 	}
 }
 
-// NewScheduleFrom returns a scheduled filled with the runs
+// NewScheduleFrom returns a scheduled filled with the runs.
 func NewScheduleFrom(runs []*Run) *Schedule {
 	if len(runs) == 0 {
-		return NewSchedule()
+		return nil
 	}
 
 	s := &Schedule{
-		Runs:     make([]*Run, 0, len(runs)),
+		Runs:     runs,
 		byRunner: map[string][]*Run{},
 		byHost:   map[string][]*Run{},
 	}
-	s.load(runs)
+
+	s.calc()
 	return s
 }
 
-// load a series of runs in the Schedule
-//
-// Call this method when wanting to add runs to a schedule to ensure that
-// the byRunner and byHost maps get updated. This permits the filter functions
-// like ForHost and ForRunner to work
-func (s *Schedule) load(runs []*Run) {
+// calc computes the byHost and byRunner lookup maps.
+func (s *Schedule) calc() {
 	s.l.Lock()
 	defer s.l.Unlock()
-	for _, run := range runs {
-		s.Runs = append(s.Runs, run)
-		for _, runner := range run.Runners {
-			rev, ok := s.byRunner[runner.Handle]
-			if ok {
-				s.byRunner[runner.Handle] = append(rev, run)
+
+	for _, run := range s.Runs {
+		for _, talent := range run.Runners {
+			name := normalised(talent.Name)
+			if rev, ok := s.byRunner[name]; ok {
+				s.byRunner[name] = append(rev, run)
 			} else {
-				s.byRunner[runner.Handle] = []*Run{run}
+				s.byRunner[name] = []*Run{run}
 			}
 		}
-		for _, host := range run.Hosts {
-			hev, ok := s.byHost[host]
-			if ok {
-				s.byHost[host] = append(hev, run)
+		for _, talent := range run.Hosts {
+			name := normalised(talent.Name)
+			if hev, ok := s.byHost[name]; ok {
+				s.byHost[name] = append(hev, run)
 			} else {
-				s.byHost[host] = []*Run{run}
+				s.byHost[name] = []*Run{run}
 			}
 		}
 	}
 }
 
-// ForRunner returns a new schedule with runs only matching this runner
+// ForRunner returns a new schedule with runs only matching this runner.
 //
-// The runner's name is matched using a string submatch. This means that if you
+// The runner's name is matched using a substring match. This means that if you
 // call somtething like schedule.ForRunner("b") you can get a schedule with runs
 // for multiple runners.
+//
+// You'll get a nil schedule if no run matched the runner.
 //
 // The match is case insensitive.
 func (s *Schedule) ForRunner(name string) *Schedule {
 	return s.forEntity("runner", name)
 }
 
-// ForHost returns a new schedule with runs only matching this host
+// ForHost returns a new schedule with runs only matching this host.
 //
-// The host's name is matched using a string submatch. This means that if you
-// call somtething like schedule.ForHust("b") you can get a schedule with runs
+// The host's name is matched using a substring match. This means that if you
+// call somtething like schedule.ForHost("b") you can get a schedule with runs
 // for multiple hosts.
+//
+// You'll get a nil schedule if no run matched the host.
 //
 // The match is case insensitive.
 func (s *Schedule) ForHost(name string) *Schedule {
 	return s.forEntity("host", name)
 }
 
-// ForTitle returns a new schedule with runs only matching this runs title
+// ForTitle returns a new schedule with runs only matching the title.
 //
-// The title is matched using a string submatch. This means that if you call
+// The title is matched using a substring match. This means that if you call
 // somtething like schedule.ForTitle("b") you can get a schedule with multiple
 // runs.
 //
+// You'll get a nil schedule if no run matched the title.
+//
 // The match is case insensitive.
 func (s *Schedule) ForTitle(title string) *Schedule {
-	if strings.TrimSpace(title) == "" {
-		return NewSchedule()
-	}
-
-	s.l.RLock()
-	defer s.l.RUnlock()
-
-	runs := []*Run{}
-	for _, run := range s.Runs {
-		if strings.Contains(normalised(run.Title), normalised(title)) {
-			runs = append(runs, run)
-		}
-	}
-
-	ns := NewScheduleFrom(runs)
-	return ns
+	return s.forEntity("title", title)
 }
 
 func (s *Schedule) forEntity(kind string, match string) *Schedule {
-	ns := NewSchedule()
 	if strings.TrimSpace(match) == "" {
-		return ns
+		return nil
 	}
 
-	var runs map[string][]*Run
+	match = normalised(match)
+	matched := make([]*Run, 0, 8)
 
+	s.l.RLock()
 	switch kind {
+	case "title":
+		for _, run := range s.Runs {
+			if strings.Contains(normalised(run.Title), match) {
+				matched = append(matched, run)
+			}
+		}
 	case "host":
-		runs = s.byHost
+		for h, rs := range s.byHost {
+			if strings.Contains(h, match) {
+				matched = append(matched, rs...)
+			}
+		}
 	case "runner":
-		runs = s.byRunner
+		for h, rs := range s.byRunner {
+			if strings.Contains(h, match) {
+				matched = append(matched, rs...)
+			}
+		}
 	default:
 		panic(fmt.Sprintf("unsupported kind: %s in forEntity call", kind))
 	}
+	s.l.RUnlock()
 
-	s.l.RLock()
-	defer s.l.RUnlock()
-
-	for h := range runs {
-		if strings.Contains(normalised(h), normalised(match)) {
-			ns.load(runs[h])
-		}
+	if len(matched) == 0 {
+		return nil
 	}
 
-	return ns
+	return NewScheduleFrom(matched)
 }
 
-// NextRun returns the next/upcoming run in the schedule
-func (s *Schedule) NextRun() *Run {
-	now := time.Now().UTC()
-	var runs *Run
-
+// NextRun returns the next run in the [Schedule].
+//
+// It returns the first run after t.
+func (s *Schedule) NextRun(t time.Time) *Run {
 	s.l.RLock()
 	defer s.l.RUnlock()
 	for _, run := range s.Runs {
-		if run.Start.After(now) {
-			runs = run
-			break
+		if run.Start.After(t) {
+			return run
 		}
 	}
-	return runs
+	return nil
 }
 
 // normalised transforms a string to a variant that has punctuation and

@@ -2,17 +2,23 @@ package main
 
 import (
 	"net/http"
+	"time"
 )
 
-const userAgent = "gdqcli (+https://github.com/daenney/gdq)"
+type transport struct {
+	userAgent string
+}
 
-type transport struct{}
-
-func (*transport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", userAgent)
+func (t *transport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if t.userAgent != "" {
+		req.Header.Set("User-Agent", t.userAgent)
+	}
 	return http.DefaultTransport.RoundTrip(req)
 }
 
-func newHTTPClient() *http.Client {
-	return &http.Client{Transport: &transport{}}
+func newHTTPClient(ua string) *http.Client {
+	return &http.Client{
+		Timeout:   30 * time.Second,
+		Transport: &transport{userAgent: ua},
+	}
 }

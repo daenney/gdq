@@ -1,15 +1,13 @@
-module github.com/daenney/gdq/v2
+module github.com/daenney/gdq/v3
 
-go 1.22
+go 1.23
 
 require (
-	github.com/stretchr/testify v1.9.0
-	golang.org/x/sync v0.8.0
-	golang.org/x/text v0.18.0
+	github.com/alecthomas/assert/v2 v2.11.0
+	golang.org/x/text v0.21.0
 )
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	github.com/alecthomas/repr v0.4.0 // indirect
+	github.com/hexops/gotextdiff v1.0.3 // indirect
 )

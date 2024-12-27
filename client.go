@@ -6,151 +6,76 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sort"
 	"time"
-
-	"golang.org/x/sync/errgroup"
 )
 
-const trackerV1 = "https://gamesdonequick.com/tracker/api/v1"
+const (
+	trackerV2 = "https://gamesdonequick.com/tracker/api/v2"
+)
 
-// Client is a GDQ API client
+// Client is a GDQ API client.
 type Client struct {
-	ctx  context.Context
-	c    *http.Client
-	base string
+	c  *http.Client
+	v2 string
 }
 
-// New creates a new GDQ API client
-func New(ctx context.Context, client *http.Client) *Client {
+// New creates a new GDQ API client.
+func New(client *http.Client) *Client {
 	return &Client{
-		ctx:  ctx,
-		c:    client,
-		base: trackerV1,
+		c:  client,
+		v2: trackerV2,
 	}
 }
 
-// Latest returns the latest event
-func (c *Client) Latest() (*Event, error) {
-	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search/?type=event", c.base))
+// Events returns all events, sorted by start date.
+func (c *Client) Events(ctx context.Context) ([]*Event, error) {
+	resp, err := fromJSON[eventsResp](ctx, c.c, fmt.Sprintf("%s/events/", c.v2))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve events: %w", err)
 	}
 
-	resp := eventsResp{}
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(resp) == 0 {
+	if len(resp.Results) == 0 {
 		return nil, fmt.Errorf("there are no known events")
 	}
 
-	sort.Slice(resp, func(i, j int) bool {
-		return resp[i].Fields.Date.Before(resp[j].Fields.Date)
-	})
-
-	ev := resp[len(resp)-1].toEvent()
-	return &ev, nil
+	return resp.toEvents(), nil
 }
 
-// Donations returns donations for an event
-func (c *Client) Donations(ev *Event) (*Donations, error) {
-	body, err := getWithCtx(c.ctx, c.c, fmt.Sprintf("%s/search/?type=event&id=%d", c.base, ev.ID))
+// Event retrieves event information for the event ID.
+//
+// Contrary to [Client.Events], this includes donation information.
+func (c *Client) Event(ctx context.Context, ev uint) (*Event, error) {
+	resp, err := fromJSON[eventResp](ctx, c.c, fmt.Sprintf("%s/events/%d/?totals=true", c.v2, ev))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve data for event %d: %w", ev, err)
 	}
 
-	resp := eventsResp{}
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(resp) == 0 {
-		return nil, fmt.Errorf("no data for event: %s (%d)", ev.Name, ev.ID)
-	}
-
-	do := resp[0].toEvent().Donations
-	return &do, nil
+	return resp.toEvent(), nil
 }
 
-// Schedule returns the Schedule for a GDQ event
-func (c *Client) Schedule(ev *Event) (*Schedule, error) {
-	grp, ctx := errgroup.WithContext(c.ctx)
-	queries := []string{
-		fmt.Sprintf("%s/search/?type=run&event=%d", c.base, ev.ID),
-		fmt.Sprintf("%s/search/?type=runner&event=%d", c.base, ev.ID),
-		fmt.Sprintf("%s/hosts/%d", c.base, ev.ID),
+// Runs returns all runs for an Event.
+func (c *Client) Runs(ctx context.Context, ev uint) ([]*Run, error) {
+	resp, err := fromJSON[runResp](ctx, c.c, fmt.Sprintf("%s/events/%d/runs/", c.v2, ev))
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve runs for event %d: %w", ev, err)
 	}
 
-	results := [3][]byte{}
-	for i, query := range queries {
-		i, query := i, query
-		grp.Go(func() error {
-			ctx, cancel := context.WithTimeout(ctx, 2*time.Minute)
-			defer cancel()
-			res, err := getWithCtx(ctx, c.c, query)
-			if err == nil {
-				results[i] = res
-			}
-			return err
-		})
+	if len(resp.Results) == 0 {
+		return nil, fmt.Errorf("there are no interviews")
 	}
 
-	if err := grp.Wait(); err != nil {
-		return nil, err
-	}
+	return resp.toRuns(), nil
+}
 
-	runs := runsResp{}
-	err := json.Unmarshal(results[0], &runs)
+// Schedule returns the [Schedule] for a GDQ event.
+//
+// This schedule only contains runs, not interviews.
+func (c *Client) Schedule(ctx context.Context, ev uint) (*Schedule, error) {
+	runs, err := c.Runs(ctx, ev)
 	if err != nil {
 		return nil, err
 	}
-
-	runners := runnersResp{}
-	err = json.Unmarshal(results[1], &runners)
-	if err != nil {
-		return nil, err
-	}
-
-	hosts := []host{}
-	err = json.Unmarshal(results[2], &hosts)
-	if err != nil {
-		return nil, err
-	}
-
-	runnersByID := map[uint]runnerResp{}
-	for _, runner := range runners {
-		runnersByID[runner.ID] = runner
-	}
-
-	runsByID := map[uint]*Run{}
-	finalRuns := []*Run{}
-
-	for _, run := range runs {
-		r := run.toRun()
-		for _, runner := range run.Fields.Runners {
-			r.Runners = append(r.Runners, runnersByID[runner].toRunner())
-		}
-		finalRuns = append(finalRuns, &r)
-		runsByID[run.ID] = &r
-	}
-
-	for _, host := range hosts {
-		for _, run := range host.Runs {
-			r, ok := runsByID[run]
-			if !ok {
-				continue
-			}
-			r.Hosts = append(r.Hosts, host.Handle)
-		}
-	}
-
-	schedule := NewScheduleFrom(finalRuns)
-
-	return schedule, nil
+	return NewScheduleFrom(runs), nil
 }
 
 func getWithCtx(ctx context.Context, c *http.Client, url string) ([]byte, error) {
@@ -169,26 +94,40 @@ func getWithCtx(ctx context.Context, c *http.Client, url string) ([]byte, error)
 	switch resp.StatusCode {
 	case http.StatusOK:
 		return io.ReadAll(resp.Body)
-	case http.StatusBadRequest:
+	case http.StatusBadRequest, http.StatusNotFound:
 		msg, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("client error: %w", err)
 		}
 		cerr := struct {
-			Error   string `json:"error"`
-			Message string `json:"exception"`
+			Detail string `json:"detail"`
 		}{}
 		err = json.Unmarshal(msg, &cerr)
 		if err != nil {
 			return nil, fmt.Errorf("client error, failed to unmarshal body: %w", err)
 		}
-		if cerr.Error == "" || cerr.Message == "" {
+		if cerr.Detail == "" {
 			return nil, fmt.Errorf("client error, unexpected body: %s", string(msg))
 		}
-		return nil, fmt.Errorf("client error: %s %s", cerr.Error, cerr.Message)
-	case http.StatusNotFound:
-		return nil, fmt.Errorf("resource not found, you probably have an error in your request URL")
+		return nil, fmt.Errorf("client error: %s ", cerr.Detail)
 	default:
-		return nil, fmt.Errorf("received unexpected status code: %d (%s)", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("received unexpected status code: %s", resp.Status)
 	}
+}
+
+func fromJSON[T any](ctx context.Context, c *http.Client, endpoint string) (*T, error) {
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+	defer cancel()
+
+	data, err := getWithCtx(ctx, c, endpoint)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve data from: %s, %w", endpoint, err)
+	}
+
+	var resp T
+	if err := json.Unmarshal(data, &resp); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal: %w", err)
+	}
+
+	return &resp, nil
 }

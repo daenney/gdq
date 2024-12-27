@@ -50,6 +50,10 @@ func (d *Duration) UnmarshalJSON(b []byte) error {
 	}
 }
 
+func (d Duration) Add(nd Duration) Duration {
+	return Duration{time.Duration(d.Nanoseconds() + nd.Nanoseconds())}
+}
+
 func (d Duration) String() string {
 	dur := d.Round(time.Minute)
 	h := dur / time.Hour

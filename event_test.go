@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/alecthomas/assert/v2"
 )
 
 func TestGetEvent(t *testing.T) {
@@ -37,10 +37,4 @@ func TestGetEventByID(t *testing.T) {
 
 func TestEventString(t *testing.T) {
 	assert.Equal(t, "Awesome Games Done Quick (2016)", AGDQ2016.String())
-}
-
-func TestToEvent(t *testing.T) {
-	e := eventResp{}
-	ev := e.toEvent()
-	assert.Equal(t, Event{Year: 1}, ev)
 }

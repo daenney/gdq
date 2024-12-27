@@ -4,18 +4,18 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/alecthomas/assert/v2"
 )
 
 func TestDurationMarshal(t *testing.T) {
 	d := Duration{0}
 	j, err := d.MarshalJSON()
-	assert.Equal(t, err, nil)
+	assert.NoError(t, err)
 	assert.Equal(t, string(j), "0")
 
 	dn := Duration{1*time.Hour + 1*time.Minute + 1*time.Second}
 	jn, err := dn.MarshalJSON()
-	assert.Equal(t, err, nil)
+	assert.NoError(t, err)
 	assert.Equal(t, string(jn), "3661000000000")
 }
 
@@ -23,13 +23,13 @@ func TestDurationUnmarshall(t *testing.T) {
 	t.Run("float", func(t *testing.T) {
 		d := &Duration{}
 		err := d.UnmarshalJSON([]byte(`16000`))
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, time.Duration(16000), d.Duration)
 	})
 	t.Run("string h:m:s", func(t *testing.T) {
 		d := &Duration{}
 		err := d.UnmarshalJSON([]byte(`"00:10:00"`))
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, time.Duration(10*time.Minute), d.Duration)
 	})
 	t.Run("string 1:2", func(t *testing.T) {
@@ -45,7 +45,7 @@ func TestDurationUnmarshall(t *testing.T) {
 	t.Run("string time.Duration", func(t *testing.T) {
 		d := &Duration{}
 		err := d.UnmarshalJSON([]byte(`"10m"`))
-		assert.Nil(t, err)
+		assert.NoError(t, err)
 		assert.Equal(t, time.Duration(10*time.Minute), d.Duration)
 	})
 	t.Run("string other", func(t *testing.T) {
